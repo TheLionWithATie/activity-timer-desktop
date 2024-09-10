@@ -8,12 +8,18 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import path from 'path';
+import path, { resolve } from 'path';
+import fs from 'fs';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { rejects } from 'assert';
+import { IProjectItem } from '../renderer/models/data/projectItem';
+import { ITimeSheet } from '../renderer/models/data/timeSheet';
+import { TimeSheetDb } from './data/timeSheetDb';
+import { ProjectDb } from './data/projectDb';
 
 class AppUpdater {
   constructor() {
@@ -24,11 +30,41 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+export const storeService = import('electron-store').then((electronStrore) => {
+  const Store = electronStrore.default;
+  const store = new Store<{
+    "$projects": IProjectItem[],
+    "$activeLaps": ITimeSheet[],
+  }>({
+    schema: {
+      "$projects": {
+        default: [],
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            "fileName": { type: "string" },
+            "projectName": { type: "string" },
+            "completed": { type: "boolean" },
+          }
+        }
+      },
+      "$activeLaps": {
+        default: [],
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            "projectKey": { type: "string" },
+            "taskKey": { type: "string" },
+            "startDateSinceEpoch": { type: "number" },
+          }
+        }
+      }
+    },
+  });
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
+  return store;
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -38,7 +74,6 @@ if (process.env.NODE_ENV === 'production') {
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
-
 if (isDebug) {
   require('electron-debug')();
 }
@@ -112,9 +147,10 @@ const createWindow = async () => {
   new AppUpdater();
 };
 
-/**
- * Add event listeners...
- */
+
+//** SERVICES ---  */
+export const timeSheetDbService = new TimeSheetDb( app, fs, path, ipcMain );
+export const projectDbService = new ProjectDb( app, fs, path, ipcMain );
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even

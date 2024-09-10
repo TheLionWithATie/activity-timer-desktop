@@ -1,8 +1,49 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { TimeSheetDb } from './data/timeSheetDb';
+import { ProjectDb, ProjectsListFilter } from './data/projectDb';
+import { ITimeSheet } from '../renderer/models/data/timeSheet';
+import { IProjectItem } from '../renderer/models/data/projectItem';
+import { IProject } from '../renderer/models/data/project';
+import { ITask } from '../renderer/models/data/task';
 
 export type Channels = 'ipc-example';
+
+export const PRELOAD_ACTIONS = {
+  timeSheet: {
+      getTimeSheetByMonth: async (month: number, year: number) => {
+        return ipcRenderer.invoke('time-sheet-get', month, year) as Promise<ITimeSheet[]>
+      },
+      editLap: async (month: number, year: number, lap: Partial<ITimeSheet>) => {
+        return ipcRenderer.invoke('time-sheet-edit-lap', month, year, lap) as Promise<ITimeSheet>
+      }
+    },
+  projects: {
+    "getProjects": async (filter?: ProjectsListFilter) => {
+      console.log('getProjects', filter);
+      return ipcRenderer.invoke('projects-get', filter) as Promise<IProjectItem[]>;
+    },
+    "getProject": async (key: string) => {
+      return ipcRenderer.invoke('project-get', key) as Promise<IProject>;
+    },
+    "createProject": async (projectName: string) => {
+      return ipcRenderer.invoke('project-create', projectName) as Promise<IProject>;
+    },
+    "editProjectInfo": async (projectKey: string, editedProject: Partial<Omit<IProject, "tasks">> ) => {
+      return ipcRenderer.invoke('project-edit-info', projectKey, editedProject) as Promise<IProject>;
+    },
+    "addTask": async (projectKey: string, taskName: string, startTime: number) => {
+      return ipcRenderer.invoke('project-add-task', projectKey, taskName, startTime) as Promise<IProject>;
+    },
+    "startTaskLap": async (projectKey: string, taskKey: string, endTime: number) => {
+      return ipcRenderer.invoke('project-start-task-lap', projectKey, taskKey, endTime) as Promise<ITask>;
+    },
+    "endTaskLap": async (projectKey: string, taskKey: string, endTime: number) => {
+      return ipcRenderer.invoke('project-end-task-lap', projectKey, taskKey, endTime) as Promise<IProject>;
+    }
+  },
+};
 
 const electronHandler = {
   ipcRenderer: {
@@ -22,6 +63,7 @@ const electronHandler = {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
   },
+  ...PRELOAD_ACTIONS,
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

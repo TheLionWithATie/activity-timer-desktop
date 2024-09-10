@@ -7,78 +7,16 @@ import PauseIcon from "../../icons/pause.svg";
 import PlayIcon from "../../icons/play.svg";
 import ResetIcon from "../../icons/reset.svg";
 import StopIcon from "../../icons/stop.svg";
-import { IProjectItem } from "../models/data/projectItem";
-import { IProject } from "../models/data/project";
-import { ITimeSheet } from "../models/data/timeSheet";
-import { TimerCircle } from "./TimerCircle";
-import { Clock } from "./clock";
-import { formatMiliseconds } from "../../util/time";
-import { ITask } from "../models/data/task";
-import { TextField } from "./fields/TextField";
+import { IProjectItem } from "../../models/data/projectItem";
+import { IProject } from "../../models/data/project";
+import { ITimeSheet } from "../../models/data/timeSheet";
+import { TimerCircle } from "../TimerCircle";
+import { Clock } from "../clock";
+import { formatMiliseconds } from "../../../util/time";
+import { ITask } from "../../models/data/task";
+import { TextField } from "../fields/TextField";
 
-
-
-const styles: { [key: string]: CSS.Properties } = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    alignContent: "center",
-    justifyContent: 'center',
-    background: "gray",
-    borderRadius: "25px",
-    padding: "20px",
-    gap: "20px",
-    margin: "20px",
-  },
-  timerCircle: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  infoText: {
-    color: "white",
-    fontSize: "2em",
-  },
-  disabledText: {
-    color: "#8D8D8D",
-    fontSize: "2em",
-    lineHeight: "40px"
-  },
-  timerContainer: {
-    borderWidth: 0,
-    width: "300px",
-    height: "300px",
-    display: 'flex',
-    alignItems: 'center',
-    gap: 0,
-    position: "relative",
-    justifyContent: 'center'
-  },
-  buttonsContainer: {
-    marginTop: "35px",
-    display: "flex",
-    flexDirection: "row",
-    width: 300 * 0.8 + "px",
-    justifyContent: "space-between",
-  },
-  button: {
-    backgroundColor: "darkgray",
-    padding: 0,
-    border: 0,
-    width: "68px",
-    height: "68px",
-  },
-};
-
-
+import "./timer.css";
 
 function Timer({ fileName, projectName, completed, behaviorSubject }: IProjectItem & { behaviorSubject: HTMLElement } ) {
   const [ project, setProject ] = useState<IProject>();
@@ -131,7 +69,7 @@ function Timer({ fileName, projectName, completed, behaviorSubject }: IProjectIt
 
 
   return (
-    <div style={styles.container}>
+    <div className="container">
       <TextField
         value={ project?.name || projectName }
         onChange={(value: string) => {
@@ -149,18 +87,18 @@ function Timer({ fileName, projectName, completed, behaviorSubject }: IProjectIt
           return "";
         }} />
 
-      <button type='button' style={ { ...styles.button, display: "flex", padding: 0, flex: 0, flexBasis: "10%" } }>
+      <button type='button' className="button" style={ { display: "flex", padding: 0, flex: 0, flexBasis: "10%" } }>
         { target > 0 ?
-            <span style={styles.infoText}> { "Target " + formatMiliseconds.toShortString(target, false) } </span>
+            <span className="infoText"> { "Target " + formatMiliseconds.toShortString(target, false) } </span>
           : [
             <img key="icon" src={ AddIcon } style={ { opacity: 0.5 } } />,
-            <span key="label" style={ styles.disabledText }> { "Set target" } </span>
+            <span key="label" className="disabledText"> { "Set target" } </span>
           ]
         }
       </button>
 
-      <div style={ styles.timerContainer }>
-        <div style={ styles.timerCircle }>
+      <div className="timerContainer">
+        <div className="timerCircle">
           <TimerCircle
             time={ 0 /** TODO get the total time */ }
             target={ target }
@@ -171,8 +109,8 @@ function Timer({ fileName, projectName, completed, behaviorSubject }: IProjectIt
         { project && project.tasks ? project.tasks.map(t => <Clock key={ t.key } totalTime={ t.totalTime } startTime={ startTime } isRunning={ (!!activeTask && t.key === activeTask.key) } target={ target } />) : null }
       </div>
 
-      <div style={ { ... styles.buttonsContainer, flex: 0, flexBasis: "10%" } }>
-        <button onClick={ () => activeTask ? stopActiveTaskTimer() : startTaskTimer(project!.tasks![0] ) } style={styles.button}>
+      <div className="buttonsContainer" style={ { flex: 0, flexBasis: "10%" } }>
+        <button onClick={ () => activeTask ? stopActiveTaskTimer() : startTaskTimer(project!.tasks![0] ) } className="button">
           <img src={ activeTask ? PlayIcon : PauseIcon }/>
         </button>
       </div>

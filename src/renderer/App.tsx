@@ -1,7 +1,7 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 
-import Timer from './components/timer';
+import Timer from './components/Timer/timer';
 import { useEffect, useState } from 'react';
 import { IProject } from './models/data/project';
 import { IProjectItem } from './models/data/projectItem';

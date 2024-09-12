@@ -2,19 +2,19 @@
 import CSS from "csstype";
 import { useState, useRef, useEffect } from "react";
 
-import AddIcon from "../../icons/add.svg";
-import PauseIcon from "../../icons/pause.svg";
-import PlayIcon from "../../icons/play.svg";
-import ResetIcon from "../../icons/reset.svg";
-import StopIcon from "../../icons/stop.svg";
+import AddIcon from "src/icons/add.svg";
+import PauseIcon from "src/icons/pause.svg";
+import PlayIcon from "src/icons/play.svg";
+import ResetIcon from "src/icons/reset.svg";
+import StopIcon from "src/icons/stop.svg";
 import { IProjectItem } from "../../models/data/projectItem";
 import { IProject } from "../../models/data/project";
 import { ITimeSheet } from "../../models/data/timeSheet";
+import { ITask } from "../../models/data/task";
 import { TimerCircle } from "../TimerCircle";
+import { TextField } from "../fields/TextField";
 import { Clock } from "../clock";
 import { formatMiliseconds } from "../../../util/time";
-import { ITask } from "../../models/data/task";
-import { TextField } from "../fields/TextField";
 
 import "./timer.css";
 
@@ -71,7 +71,7 @@ function Timer({ fileName, projectName, completed, behaviorSubject }: IProjectIt
 
 
   return (
-    <div className="container">
+    <div className="timer-container">
       <TextField
         value={ project?.name || projectName }
         onChange={(value: string) => {
@@ -89,18 +89,18 @@ function Timer({ fileName, projectName, completed, behaviorSubject }: IProjectIt
           return "";
         }} />
 
-      <button type='button' className="button" style={ { display: "flex", padding: 0, flex: 0, flexBasis: "10%" } }>
+      <button type='button' className="timer-button" style={ { display: "flex", padding: 0, flex: 0, flexBasis: "10%" } }>
         { target > 0 ?
-            <span className="infoText"> { "Target " + formatMiliseconds.toShortString(target, false) } </span>
+            <span className="timer-infoText"> { "Target " + formatMiliseconds.toShortString(target, false) } </span>
           : [
             <img key="icon" src={ AddIcon } style={ { opacity: 0.5 } } />,
-            <span key="label" className="disabledText"> { "Set target" } </span>
+            <span key="label" className="timer-disabledText"> { "Set target" } </span>
           ]
         }
       </button>
 
-      <div className="timerContainer">
-        <div className="timerCircle">
+      <div className="timer-timerContainer">
+        <div className="timer-timerCircle">
           <TimerCircle
             time={ totalTime }
             target={ target }
@@ -111,7 +111,7 @@ function Timer({ fileName, projectName, completed, behaviorSubject }: IProjectIt
         <Clock totalTime={ totalTime } startTime={ startTime } isRunning={ !!activeTask } target={ target } />
       </div>
 
-      <div className="buttonsContainer" style={ { flex: 0, flexBasis: "10%" } }>
+      <div className="timer-buttonsContainer" style={ { flex: 0, flexBasis: "10%" } }>
         <button onClick={ () => activeTask ? stopActiveTaskTimer() : startTaskTimer(project!.tasks![0] ) } className="button">
           <img src={ activeTask ? PlayIcon : PauseIcon }/>
         </button>

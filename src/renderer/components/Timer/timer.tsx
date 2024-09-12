@@ -22,6 +22,7 @@ function Timer({ fileName, projectName, completed, behaviorSubject }: IProjectIt
   const [ project, setProject ] = useState<IProject>();
   const [ target, setTarget ] = useState(0);
 
+  const [ totalTime, setTotalTime ] = useState<number>(0);
   const [ activeTask, setActiveTask ] = useState<ITask>();
   const [ startTime, setStartTime ] = useState<number>(0);
 
@@ -64,6 +65,7 @@ function Timer({ fileName, projectName, completed, behaviorSubject }: IProjectIt
 
     window.electron.projects.endTaskLap(project!.key, activeTask!.key, Date.now()).then((project) => {
       setProject(project);
+      setTotalTime( project.tasks.reduce((acc, task) => acc + task.totalTime, 0) );
     });
   }
 
@@ -100,13 +102,13 @@ function Timer({ fileName, projectName, completed, behaviorSubject }: IProjectIt
       <div className="timerContainer">
         <div className="timerCircle">
           <TimerCircle
-            time={ 0 /** TODO get the total time */ }
+            time={ totalTime }
             target={ target }
-            primaryColor={ "red" }
-            secondaryColor={ "orange" }
+            primaryColor={ "blue" }
+            secondaryColor={ "white" }
           />
         </div>
-        { project && project.tasks ? project.tasks.map(t => <Clock key={ t.key } totalTime={ t.totalTime } startTime={ startTime } isRunning={ (!!activeTask && t.key === activeTask.key) } target={ target } />) : null }
+        <Clock totalTime={ totalTime } startTime={ startTime } isRunning={ !!activeTask } target={ target } />
       </div>
 
       <div className="buttonsContainer" style={ { flex: 0, flexBasis: "10%" } }>

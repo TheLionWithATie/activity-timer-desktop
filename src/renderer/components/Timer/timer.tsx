@@ -19,11 +19,13 @@ import { formatMiliseconds } from "../../../util/time";
 import "./timer.css";
 import { projectNameValidator, taskNameValidator } from "../../../util/validators";
 import { TimerTask } from "../TimerTask/TimerTask";
-import { Clock } from "../Clock/clock";
+import { appBehaviourSubject } from "../../pages/TimersDashboard/TimersDashboard";
+import { Clock } from "../Clock/Clock";
 
-function Timer({ projectItem, behaviorSubject, projects, onInfoChanges }: {
+
+
+function Timer({ projectItem, projects, onInfoChanges }: {
   projectItem: IProjectItem,
-  behaviorSubject: HTMLElement,
   projects: IProjectItem[],
   onInfoChanges: (value: IProjectItem) => void
 } ) {
@@ -44,10 +46,10 @@ function Timer({ projectItem, behaviorSubject, projects, onInfoChanges }: {
   }, []);
 
   useEffect(() => {
-    behaviorSubject.addEventListener("active-task-changed", onActiveTaskChanged);
+    appBehaviourSubject.addEventListener("active-task-changed", onActiveTaskChanged);
 
-    return () => behaviorSubject.removeEventListener("active-task-changed", onActiveTaskChanged);
-  }, [ behaviorSubject, onActiveTaskChanged ]);
+    return () => appBehaviourSubject.removeEventListener("active-task-changed", onActiveTaskChanged);
+  }, [ appBehaviourSubject, onActiveTaskChanged ]);
 
   useEffect(() => {
     if (!projectItem.fileName) return;
@@ -76,7 +78,7 @@ function Timer({ projectItem, behaviorSubject, projects, onInfoChanges }: {
       setActiveTask(task);
     });
 
-    behaviorSubject.dispatchEvent(new CustomEvent("active-task-changed", { detail: task }));
+    appBehaviourSubject.dispatchEvent(new CustomEvent("active-task-changed", { detail: task }));
   }
 
   const stopActiveTaskTimer = () => {

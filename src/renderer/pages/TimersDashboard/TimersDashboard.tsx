@@ -8,9 +8,10 @@ import { TextField } from "../../components/fields/TextField";
 import { projectNameValidator } from "../../../util/validators";
 import { InfiniteSelector } from "../../components/infiniteSelector/InfiniteSelector";
 
+export const appBehaviourSubject = document.createElement("behaviour-subject");
+
 export function TimersDashboard() {
   const [ projects, setProjects ] = useState<IProjectItem[]>([]);
-  const [ behaviorSubject , setBehaviorSubject ] = useState( document.createElement("behaviour-subject") )
   const [ newProjectName, setNewProjectName ] = useState<string | undefined>("");
 
   useEffect(() => {
@@ -24,7 +25,6 @@ export function TimersDashboard() {
           key={ p.fileName }
           projectItem={ p }
           projects={ projects }
-          behaviorSubject={ behaviorSubject }
           onInfoChanges={ (value) => {
             projects[i] = value;
             setProjects([...projects]);

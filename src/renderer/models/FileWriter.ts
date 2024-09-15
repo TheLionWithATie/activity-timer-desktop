@@ -46,8 +46,8 @@ export abstract class FileWriter {
   }
 
   protected readData(fileName: string): Promise<any> {
-      return new Promise((resolve, reject) => {
-        if (!this.doesFileExist(fileName)) {
+      return new Promise(async (resolve, reject) => {
+        if (! (await this.doesFileExist(fileName))) {
           resolve(null);
         }
 

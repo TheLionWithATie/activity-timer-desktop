@@ -1,0 +1,117 @@
+.time-sheet-table {
+  width: 100%;
+  overflow: auto;
+  display: block;
+  position: relative;
+  border-collapse: collapse;
+  animation: row-animation 0.5s ease-out forwards;
+  border-radius: 15px;
+  padding-bottom: 5px;
+}
+
+.time-sheet-table th {
+  min-width: 70px;
+  padding: 4px 10px;
+  background-color: var(--color-card);
+}
+.time-sheet-table th > span.time-sheet-weekday {
+  display: block;
+  font-size: 0.75em;
+  opacity: 0.75;
+  text-align: center;
+}
+
+.time-sheet-table td {
+  padding: 5px 10px;
+  text-align: center;
+}
+
+.time-sheet-table tr.time-sheet-row {
+  opacity: 0;
+  animation: row-animation 0.5s ease-out forwards;
+}
+
+.time-sheet-row td:first-child,
+.time-sheet-table th:first-child {
+  min-width: 200px;
+  z-index: 2;
+  position: sticky;
+  background-color: var(--color-card);
+  left: 0px;
+  text-align: start;
+}
+
+.time-sheet-row td:last-child,
+.time-sheet-table th:last-child {
+  text-align: center;
+  z-index: 2;
+  min-width: 100px;
+  position: sticky;
+  background-color: var(--color-card);
+  right: 0px;
+}
+
+.time-sheet-table thead {
+  border-radius: 15px 15px 0 0;
+}
+.time-sheet-table tbody {
+  border-radius: 0 0 15px 15px;
+}
+.time-sheet-table tr:last-child td:first-child {
+  border-radius: 0 0 0 15px;
+}
+.time-sheet-table tr:last-child td:last-child {
+  border-radius: 0 0 15px 0;
+}
+
+.time-sheet-row td[aria-weekday="0"],
+.time-sheet-table th[aria-weekday="0"],
+.time-sheet-row td[aria-weekday="6"],
+.time-sheet-table th[aria-weekday="6"] {
+  background-color: var(--color-foreground-15);
+  opacity: 0.5;
+}
+.time-sheet-row td[aria-weekday="0"]:not(:nth-child(1)),
+.time-sheet-table th[aria-weekday="0"]:not(:nth-child(1)) {
+  border-right: 1px solid var(--color-foreground-25);
+}
+.time-sheet-row td[aria-weekday="6"]:not(:nth-last-child(1)),
+.time-sheet-table th[aria-weekday="6"]:not(:nth-last-child(1)) {
+  border-left: 1px solid var(--color-foreground-25);
+}
+
+.time-sheet-table th[is-today="true"]::after {
+  content: "";
+  transform: translateX(-50%);
+  position: absolute;
+  top: 0;
+  bottom: 5px;
+  border-radius: 10px;
+  width: 70px;
+  border: 1px solid white;
+}
+
+
+.time-sheet-no-data td {
+  height: 50px;
+}
+.time-sheet-no-data td span {
+  text-align: center;
+  position: sticky;
+  left: 50%;
+  right: 50%;
+  width: 0px;
+  display: block;
+  white-space: nowrap;
+}
+
+@keyframes row-animation {
+  0% {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}

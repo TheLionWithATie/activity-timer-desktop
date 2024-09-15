@@ -14,11 +14,11 @@ export class TimeSheetDb extends FileWriter  {
   ) {
     super(app, fs, path, 'timeSheet');
 
-    ipcMain.on('time-sheet-get', (event, month, year) => {
+    ipcMain.handle('time-sheet-get', (event, month, year) => {
       return this.getTimeSheetByMonth(month, year);
     });
 
-    ipcMain.on('time-sheet-edit-lap', (event, month, year, lap) => {
+    ipcMain.handle('time-sheet-edit-lap', (event, month, year, lap) => {
       return this.editLap(month, year, lap);
     });
   }
@@ -51,12 +51,16 @@ export class TimeSheetDb extends FileWriter  {
       timeSheet = await this.readData(fileName) as ITimeSheet[];
     }
 
+    const date = new Date(lap.startDateSinceEpoch);
+
     timeSheet.push({
       key: (lap.startDateSinceEpoch + lap.endDateSinceEpoch).toString(16),
       taskKey: lap.taskKey,
       projectKey: lap.projectKey.slice(0, 50).replace(/[. ,/\\\(\)]/, "_"),
       startDateSinceEpoch: Number(lap.startDateSinceEpoch),
-      endDateSinceEpoch: Number(lap.endDateSinceEpoch)
+      endDateSinceEpoch: Number(lap.endDateSinceEpoch),
+      date: date.getDate(),
+      weekDay: date.getDay(),
     })
 
     return this.saveData(`time_sheet_${year}_${month}.json`, timeSheet);

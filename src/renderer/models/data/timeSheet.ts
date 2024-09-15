@@ -8,6 +8,9 @@ export interface ITimeSheet {
 
   startDateSinceEpoch: number;
   endDateSinceEpoch: number;
+
+  date: number;
+  weekDay: number;
 }
 
 export interface ITimeSheetExtended extends ITimeSheet {
@@ -23,20 +26,20 @@ export function timeSheetToDateTable(timeSheet: ITimeSheet[]) {
     const dateEnd = new Date(c.endDateSinceEpoch);
     const key = dateStart.getDate().toString();
     const totalTime = c.endDateSinceEpoch - c.startDateSinceEpoch;
-  
+
     const extendedTmSht: ITimeSheetExtended = {
       ...c,
       startDate: dateStart,
       endDate: dateEnd,
       totalTime: totalTime,
       totalFormattedTime: formatMiliseconds.toShortString(totalTime)
-    } 
-  
+    }
+
     if (p[ key ])
       p[key].push(extendedTmSht);
     else
       p[key] = [extendedTmSht];
-  
+
     return p;
   }, {} as { [key: string]: ITimeSheetExtended[] })
 }

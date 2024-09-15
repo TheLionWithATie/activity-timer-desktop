@@ -84,11 +84,19 @@ body[data-theme="light"] {
 body {
   display: flex;
   justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   position: relative;
   height: 100vh;
   color: var(--color-foreground );
   background: var(--color-background);
+}
+#root {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0px;
+  align-items: stretch;
+  overflow: hidden;
 }
 img {
   user-select: none;
@@ -143,4 +151,32 @@ button:active {
 }
 .btn-no-background {
   background-color: var(--color-foreground-0);
+}
+
+::-webkit-scrollbar-track
+{
+	background-color: transparent;
+}
+
+::-webkit-scrollbar
+{
+	width: 10px;
+	height: 10px;
+  padding: 2px;
+  scrollbar-width: 0px;
+	background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+  border: 2px solid var(--color-background);
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: var(--color-foreground-25);
+}
+
+
+.app-navigation-header {
+  background-color: #202020;
+  padding: 10px;
 }

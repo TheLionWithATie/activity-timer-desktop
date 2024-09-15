@@ -1,0 +1,78 @@
+
+.infinite-selector > * {
+  flex: 1 1 0px;
+  opacity: 0.75;
+  transition: background-color 0.1s ease-in, opacity 0.5s ease-in-out;
+}
+
+.infinite-selector > *:nth-child(2) {
+  transform: scale(2);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.infinite-selector-switch-to-prev {
+  pointer-events: none;
+  animation: infinite-selector-switch-container-prev 0.5s ease-in-out;
+  animation-fill-mode: forwards;
+}
+.infinite-selector-switch-to-next {
+  pointer-events: none;
+  animation: infinite-selector-switch-container-next 0.5s ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.infinite-selector-switch-to-prev > *:nth-child(1)  {
+  animation: infinite-selector-switch-state 0.5s ease-in-out;
+  animation-fill-mode: forwards;
+}
+.infinite-selector-switch-to-prev > *:nth-child(3),
+.infinite-selector-switch-to-next > *:nth-child(1)  {
+  opacity: 0;
+}
+.infinite-selector-switch-to-next > *:nth-child(3)  {
+  animation: infinite-selector-switch-state 0.5s ease-in-out;
+  animation-fill-mode: forwards;
+}
+.infinite-selector-switch-to-prev > *:nth-child(2),
+.infinite-selector-switch-to-next > *:nth-child(2) {
+  animation: infinite-selector-switch-state 0.5s ease-in-out reverse;
+  animation-fill-mode: forwards;
+}
+
+@keyframes infinite-selector-switch-state {
+  from {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  to {
+    transform: scale(2);
+    opacity: 1;
+  }
+}
+@keyframes infinite-selector-switch-selected-value {
+  from {
+    transform: scale(2);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+}
+@keyframes infinite-selector-switch-container-next {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-33.3%);
+  }
+}
+@keyframes infinite-selector-switch-container-prev {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(33.3%);
+  }
+}

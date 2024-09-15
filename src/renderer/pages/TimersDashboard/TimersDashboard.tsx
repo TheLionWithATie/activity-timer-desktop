@@ -6,6 +6,7 @@ import AddIcon from "../../../icons/add.svg";
 import "./TimersDashboard.css";
 import { TextField } from "../../components/fields/TextField";
 import { projectNameValidator } from "../../../util/validators";
+import { InfiniteSelector } from "../../components/infiniteSelector/InfiniteSelector";
 
 export function TimersDashboard() {
   const [ projects, setProjects ] = useState<IProjectItem[]>([]);

@@ -1,9 +1,12 @@
 .dashboard-grid {
   display: flex;
+  scrollbar-gutter: stable;
+  overflow-y: overlay;
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
   gap: 20px;
+  padding: 20px;
 }
 .dashboard-grid > .dashboard-add-project-btn {
   background-color: var(--color-foreground-25);

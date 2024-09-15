@@ -33,14 +33,17 @@ export const PRELOAD_ACTIONS = {
     "editProjectInfo": async (projectKey: string, editedProject: Partial<Omit<IProject, "tasks">> ) => {
       return ipcRenderer.invoke('project-edit-info', projectKey, editedProject) as Promise<IProject>;
     },
-    "addTask": async (projectKey: string, taskName: string, startTime: number) => {
-      return ipcRenderer.invoke('project-add-task', projectKey, taskName, startTime) as Promise<IProject>;
+    "addTask": async (projectKey: string, taskName: string) => {
+      return ipcRenderer.invoke('project-add-task', projectKey, taskName) as Promise<IProject>;
+    },
+    "editTask": async (projectKey: string, taskKey: string, taskInfo: Partial<Omit<Omit<ITask, "key">, "projectKey">>) => {
+      return ipcRenderer.invoke('project-edit-task', projectKey, taskKey, taskInfo) as Promise<IProject>;
     },
     "startTaskLap": async (projectKey: string, taskKey: string, endTime: number) => {
       return ipcRenderer.invoke('project-start-task-lap', projectKey, taskKey, endTime) as Promise<ITask>;
     },
-    "endTaskLap": async (projectKey: string, taskKey: string, endTime: number) => {
-      return ipcRenderer.invoke('project-end-task-lap', projectKey, taskKey, endTime) as Promise<IProject>;
+    "endTaskLap": async (endTime: number) => {
+      return ipcRenderer.invoke('project-end-task-lap', endTime) as Promise<IProject>;
     }
   },
 };

@@ -26,25 +26,30 @@ export class TimeSheetDb extends FileWriter  {
   private getTimeSheetByMonth(month: number, year: number) {
     month = Number(month);
     year = Number(year);
-    return this.readData(`$time_sheet_${year}_${month}.json`) as Promise<ITimeSheet[]>;
+    return this.readData(`time_sheet_${year}_${month}.json`) as Promise<ITimeSheet[]>;
   }
   private async editLap(month: number, year: number, lap: Partial<ITimeSheet>) {
     month = Number(month);
     year = Number(year);
-    const timeSheet = await this.readData(`$time_sheet_${year}_${month}.json`) as ITimeSheet[];
+    const timeSheet = await this.readData(`time_sheet_${year}_${month}.json`) as ITimeSheet[];
     const originalLapIndex = timeSheet.findIndex(originalLap => originalLap.key === lap.key);
 
     if (lap.startDateSinceEpoch) timeSheet[originalLapIndex].startDateSinceEpoch = lap.startDateSinceEpoch;
     if (lap.endDateSinceEpoch) timeSheet[originalLapIndex].endDateSinceEpoch = lap.endDateSinceEpoch;
 
-    return this.saveData(`$time_sheet_${lap.startDateSinceEpoch}.json`, lap);
+    return this.saveData(`time_sheet_${lap.startDateSinceEpoch}.json`, lap);
   }
 
   //** WARNING -- this doesn't propagate the edit to the project file, use the projectDb for that  */
   public async __addLap(month: number, year: number, lap: Omit<ITimeSheet, "key">) {
     month = Number(month);
     year = Number(year);
-    const timeSheet = await this.readData(`$time_sheet_${year}_${month}.json`) as ITimeSheet[];
+    const fileName = `time_sheet_${year}_${month}.json`;
+
+    let timeSheet: ITimeSheet[] = [];
+    if (await this.doesFileExist(fileName)) {
+      timeSheet = await this.readData(fileName) as ITimeSheet[];
+    }
 
     timeSheet.push({
       key: (lap.startDateSinceEpoch + lap.endDateSinceEpoch).toString(16),
@@ -54,7 +59,7 @@ export class TimeSheetDb extends FileWriter  {
       endDateSinceEpoch: Number(lap.endDateSinceEpoch)
     })
 
-    return this.saveData(`$time_sheet_${year}_${month}.json`, lap);
+    return this.saveData(`time_sheet_${year}_${month}.json`, timeSheet);
   }
 
 

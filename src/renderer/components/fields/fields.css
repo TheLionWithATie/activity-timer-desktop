@@ -1,0 +1,52 @@
+
+.field-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+  font-size: 20px;
+}
+
+.field-input {
+  display: block;
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-foreground);
+  border-top: 0px !important;
+  border-left: 0px !important;
+  border-right: 0px !important;
+  border-bottom: 2px solid white;
+  border-color: var(--color-primary);
+  z-index: 20;
+  animation: animate-border-with 0.1s ease-in-out;
+}
+@keyframes animate-border-with {
+  from {
+    border-color: transparent;
+    border-bottom-width: 0px;
+  }
+  to {
+    border-color: var(--color-primary);
+    border-bottom-width: 2px;
+  }
+}
+
+.field-error {
+  color: var(--color-error);
+  z-index: 10;
+  animation: apper-from-bottom 0.3s ease-in-out;
+}
+
+@keyframes apper-from-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

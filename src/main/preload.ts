@@ -28,7 +28,7 @@ export const PRELOAD_ACTIONS = {
       return ipcRenderer.invoke('project-get', key) as Promise<IProject>;
     },
     "createProject": async (projectName: string) => {
-      return ipcRenderer.invoke('project-create', projectName) as Promise<IProject>;
+      return ipcRenderer.invoke('project-create', projectName) as Promise<IProjectItem>;
     },
     "editProjectInfo": async (projectKey: string, editedProject: Partial<Omit<IProject, "tasks">> ) => {
       return ipcRenderer.invoke('project-edit-info', projectKey, editedProject) as Promise<IProject>;

@@ -84,6 +84,9 @@ export class ProjectDb extends FileWriter  {
     const cachedProjects = (await this.cachedProjects);
     const fileName = projectName.trim().slice(0, 50).replace(/[. ,/\\\(\)]/, "_") + "_" + (new Date().getTime()).toString(16);
 
+    if (await this.doesFileExist(fileName + ".json")) throw Error("File already exists");
+
+
     const newProjectItem: IProjectItem = {
       completed: false,
       projectName: String(projectName),
@@ -109,7 +112,8 @@ export class ProjectDb extends FileWriter  {
     cachedProjects.push(newProjectItem);
 
     storeService.then(store => store.set("$projects", cachedProjects));
-    return this.saveData(fileName + ".json", newProject)
+    this.saveData(fileName + ".json", newProject)
+    return newProjectItem;
   }
 
   private async editProjectInfo(projectKey: string, editedProject: Partial<Omit<IProject, "tasks">> ) {
@@ -177,7 +181,7 @@ export class ProjectDb extends FileWriter  {
     const startDate = new Date(activeLap.startDateSinceEpoch);
 
 
-    project.tasks[taskIndex].totalTime += activeLap.startDateSinceEpoch - endTime;
+    project.tasks[taskIndex].totalTime += endTime - activeLap.startDateSinceEpoch;
     await this.saveData(project.key + ".json", project);
 
     await timeSheetDbService.__addLap(startDate.getFullYear(), startDate.getMonth() + 1, {

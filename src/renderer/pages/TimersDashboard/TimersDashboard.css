@@ -1,0 +1,20 @@
+.dashboard-grid {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.dashboard-grid > .dashboard-add-project-btn {
+  background-color: var(--color-foreground-25);
+  align-items: center;
+  opacity: 0.5;
+}
+.dashboard-add-project-btn:hover {
+  opacity: 1;
+}
+.dashboard-add-project-btn > img {
+  width: 160px;
+  height: 160px;
+  opacity: 0.55;
+}

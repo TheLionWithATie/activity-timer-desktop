@@ -96,6 +96,8 @@ const createWindow = async () => {
     await installExtensions();
   }
 
+  const windowBounds: any = (await storeService).get("$window-settings");
+
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
     : path.join(__dirname, '../../assets');
@@ -114,6 +116,8 @@ const createWindow = async () => {
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
+
+    ...windowBounds,
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
@@ -130,7 +134,11 @@ const createWindow = async () => {
   });
 
   mainWindow.on('closed', () => {
-    mainWindow = null;
+    storeService.then((store) => {
+      store.set("$window-settings", mainWindow && mainWindow?.getBounds());
+
+      mainWindow = null;
+    })
   });
 
   const menuBuilder = new MenuBuilder(mainWindow);

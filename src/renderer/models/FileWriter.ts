@@ -32,7 +32,7 @@ export abstract class FileWriter {
   }
 
   protected saveData(fileName: string, data: any) {
-      const text = JSON.stringify(data)
+      const text = JSON.stringify(data);
 
       return new Promise<boolean>((resolve, reject) => {
         this._fs.writeFile(this._path.join(this._app.getPath('userData'), this.folderName, fileName), text, err => {
@@ -47,7 +47,9 @@ export abstract class FileWriter {
 
   protected readData(fileName: string): Promise<any> {
       return new Promise((resolve, reject) => {
-        this._fs.readFile
+        if (!this.doesFileExist(fileName)) {
+          resolve(null);
+        }
 
         this._fs.readFile(this._path.join(this._app.getPath('userData'), this.folderName, fileName), 'utf8', (err, data) => {
             if (err) {

@@ -40,10 +40,10 @@
 .timer-task[aria-selected="true"] .timer-task-indicator {
   background-color: var(--color-foreground);
 }
-.timer-task[aria-active="true"] {
+.timer-task[is-active="true"] {
   opacity: 1;
 }
-.timer-task[aria-active="true"] .timer-task-indicator {
+.timer-task[is-active="true"] .timer-task-indicator {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
 }
@@ -56,10 +56,10 @@
 .timer-task:hover {
   transform: translateX(5px);
 }
-.timer-task[aria-disabled="true"][aria-active="true"] .timer-task-indicator {
+.timer-task[aria-disabled="true"][is-active="true"] .timer-task-indicator {
   pointer-events: none !important;
 }
-.timer-task:not([aria-disabled="true"]):not([aria-active="true"]):hover .timer-task-indicator img {
+.timer-task:not([aria-disabled="true"]):not([is-active="true"]):hover .timer-task-indicator img {
   opacity: 1;
   transform: scale(1) rotate(0deg);
 }

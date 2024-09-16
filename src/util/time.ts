@@ -5,18 +5,11 @@ export const transformMiliseconds = {
   toTimeObject: (miliseconds: number) => {
     let seconds = Math.floor(miliseconds / 1000);
     let minutes = Math.floor(seconds / 60);
-    let hours = Math.floor(minutes / 60) % 60;
-
-    seconds = seconds % 60;
-    minutes = minutes % 60;
-
-    if (hours < 0) {
-      hours = 0;
-    }
+    let hours = Math.floor(minutes / 60);
 
     return {
-      seconds,
-      minutes,
+      seconds: seconds % 60,
+      minutes: minutes % 60,
       hours,
     }
   },
@@ -35,8 +28,6 @@ export const formatMiliseconds = {
     }
     if (timeObj.minutes) parts.push(timeObj.minutes + "m")
     if (parts.length === 0 || showSeconds) parts.push(timeObj.seconds + "s")
-
-
 
     return parts.join(" ");
   },

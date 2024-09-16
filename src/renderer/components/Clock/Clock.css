@@ -5,14 +5,19 @@
   padding: 0;
   font-size: 85px;
   margin: 0;
+  z-index: 10;
 }
 
 .clock-sub-text {
   position: absolute;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-weight: bold;
-  bottom: 28%;
-  color: #8D8D8D;
-  font-size: 36px;
+  color: var(--color-foreground-5);
+  font-size: 218px;
   margin: 0;
+  pointer-events: none;
+}
+
+.clock[show-seconds="inline"] {
+  font-size: 140px;
 }

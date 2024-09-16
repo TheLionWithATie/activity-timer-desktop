@@ -22,6 +22,8 @@ import { TimerTask } from "../TimerTask/TimerTask";
 import { appBehaviourSubject } from "../../pages/TimersDashboard/TimersDashboard";
 import { Clock } from "../Clock/Clock";
 import { electron } from "process";
+import { ProjectSettingsOverlay, ProjectSettingsOverlayAction } from "../ProjectOverlay/ProjectSettingsOverlay";
+import { TimerTasksList } from "./TimerTasksList";
 
 
 
@@ -32,12 +34,13 @@ function Timer({ projectItem, projects, onInfoChanges }: {
 } ) {
   const [ project, setProject ] = useState<IProject>();
   const [ target, setTarget ] = useState(0);
+  const [ overlay, setOverlay ] = useState<"" | "notes" | "settings">("");
   const [ isEditingName, setIsEditingName ] = useState(false);
 
   const [ totalTime, setTotalTime ] = useState<number>(0);
   const [ lastActiveTask, setLastActiveTask ] = useState<ITask>();
   const [ activeTask, _setActiveTask ] = useState<ITask>();
-  
+
   const _activeTaskRef = useRef(activeTask);
   const setActiveTask = (data: ITask | undefined) => {
     _activeTaskRef.current = data;
@@ -45,7 +48,7 @@ function Timer({ projectItem, projects, onInfoChanges }: {
   };
 
   const [ startTime, setStartTime ] = useState<number>(0);
-  const [ newTaskName, setNewTaskName ] = useState<string | 0>(0);
+  const [ createNewTask, setCreateNewTask ] = useState<boolean>(false);
 
   const onActiveTaskChanged = (e: any) => {
     const activeTask = _activeTaskRef.current;
@@ -114,10 +117,35 @@ function Timer({ projectItem, projects, onInfoChanges }: {
     });
   }
 
-  let showCircle = (project?.tasks.length === 1 && newTaskName === 0);
+  const handleSettingsAction = (e: ProjectSettingsOverlayAction) => {
+    switch (e) {
+
+      case "edit-project-name":
+        setIsEditingName(true);
+        return;
+      case "complete-project":
+        window.electron.projects.editProjectInfo(projectItem.fileName, {
+          ...project,
+          completed: true,
+        }).then((project) => {
+          appBehaviourSubject.dispatchEvent(new CustomEvent("project-completed", { detail: project }));
+        });
+        return;
+      default:
+        setOverlay("");
+        return;
+    }
+  }
+
+  let showCircle = (project?.tasks.length === 1 && !createNewTask);
 
   return (
-    <div id={ "timer-" + projectItem.fileName } className="timer-container" aria-active={ !!activeTask }>
+    <div id={ "timer-" + projectItem.fileName } className="timer-container" is-active={ (activeTask != null).toString() }>
+      {
+        project ? [
+          <ProjectSettingsOverlay key="project-settings" show={ overlay === "settings" } onAction={ handleSettingsAction } project={ project } />
+        ] : null
+      }
       <style>
         { `
           #timer-${ projectItem.fileName } {
@@ -149,7 +177,7 @@ function Timer({ projectItem, projects, onInfoChanges }: {
           validator={(value: string) => {
             return projectNameValidator(projects, value);
           }} />
-        <button type="button" className="btn-icon btn-no-background">
+        <button type="button" className="btn-icon btn-no-background" onClick={ () => setOverlay("settings") }>
           <img src={ SettingsIcon } />
         </button>
       </div>
@@ -166,48 +194,18 @@ function Timer({ projectItem, projects, onInfoChanges }: {
               />
             </div> : null
         }
-        <Clock totalTime={ totalTime } startTime={ startTime } isRunning={ !!activeTask } target={ target } showSeconds={ showCircle } />
+        <Clock totalTime={ totalTime } startTime={ startTime } isRunning={ !!activeTask } showSeconds={ showCircle ? true : "inline" } />
       </div>
       {
-        !showCircle ? <div className="timer-tasks-list flex-column">
-          {
-            project?.tasks.map((t) =>
-              <TimerTask
-                key={ t.key }
-                projectKey={ project.key }
-                task={ t }
-                isActiveTask={ !!activeTask && t.key === activeTask.key }
-                isLastPlayedTask={ !!lastActiveTask && t.key === lastActiveTask.key  }
-                tasks={ project.tasks }
-                onPlayClick={() => {
-
-                  startTaskTimer(t)
-                }}
-                updatedTask={(project: IProject) => {
-                  setProject(project);
-                }} />
-            )
-          }
-
-          {
-            newTaskName !== 0 ? 
-              <TextField
-                value={ newTaskName }
-                onCancel={() => setNewTaskName(0)}
-                onChange={(value: string) => {
-                  setNewTaskName(0);
-                  window.electron.projects.addTask(project!.key, value).then((project) => {
-                    setProject({ ...project! });
-                  })
-                }}
-                validator={(value: string) => {
-                  return taskNameValidator(project?.tasks, value);
-                }}
-              /> : null
-          }
-        </div> : null
+        (!showCircle && project) ? <TimerTasksList
+          project={ project }
+          activeTask={ activeTask }
+          lastActiveTask={ lastActiveTask }
+          projectChanged={ setProject }
+          startTaskTimer={ startTaskTimer }
+          createNewTask={ createNewTask }
+        /> : null
       }
-
 
       <div className="timer-actions-row" style={ { flex: 0, flexBasis: "10%" } }>
         <button className="btn btn-no-background flex-grow">
@@ -218,14 +216,14 @@ function Timer({ projectItem, projects, onInfoChanges }: {
           }
           <span>TARGET</span>
         </button>
-        <button className="btn-icon button" onClick={ () => activeTask ? stopActiveTaskTimer() : startTaskTimer(project!.tasks![0] ) }>
+        <button className="btn-icon button" onClick={ () => activeTask ? stopActiveTaskTimer() : startTaskTimer(lastActiveTask || project!.tasks![0] ) }>
           <img src={ activeTask ? PlayIcon : PauseIcon }/>
         </button>
         <button className="btn btn-no-background flex-grow" onClick={() => {
-          setNewTaskName("");
+          setCreateNewTask(true);
         }}>
           <img src={ AddIcon }/>
-          <span>TARGET</span>
+          <span>TASK</span>
         </button>
       </div>
     </div>

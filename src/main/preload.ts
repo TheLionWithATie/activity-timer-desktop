@@ -1,8 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { TimeSheetDb } from './data/timeSheetDb';
-import { ProjectDb, ProjectsListFilter } from './data/projectDb';
+import { ProjectsListFilter } from './data/projectDb';
 import { ITimeSheet } from '../renderer/models/data/timeSheet';
 import { IProjectItem } from '../renderer/models/data/projectItem';
 import { IProject } from '../renderer/models/data/project';

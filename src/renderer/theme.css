@@ -51,6 +51,7 @@ body, html {
 
 body[data-theme="dark"] {
   --color-background: #020202;
+  --color-background-50: #02020280;
   --color-card: #111111;
   --color-error: #db3232;
 
@@ -67,6 +68,7 @@ body[data-theme="dark"] {
 
 body[data-theme="light"] {
   --color-background: #e6e6e6;
+  --color-background-50: #e6e6e680;
   --color-card: #c9c9c9;
   --color-error: #db4141;
 

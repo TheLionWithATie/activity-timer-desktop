@@ -26,8 +26,9 @@ export function TimerTask({
   updatedTask: (project: IProject) => void
 }) {
 
+
   return (
-    <div className="flex-row timer-task" aria-active={ isActiveTask } aria-selected={ isLastPlayedTask } aria-disabled={ task.completed }>
+    <div className="flex-row timer-task" is-active={ isActiveTask.toString() } aria-selected={ (isActiveTask || isLastPlayedTask) } aria-disabled={ task.completed }>
       <div className="timer-task-indicator flex-row">
         <div onClick={ onPlayClick }>
           <img src={ PlayIcon } />

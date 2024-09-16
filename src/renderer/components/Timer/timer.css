@@ -1,6 +1,8 @@
 .timer-container {
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
   align-items: stretch;
   align-content: center;
   justify-content: center;
@@ -13,7 +15,7 @@
   box-shadow: 0 0 0 0 var(--color-primary);
   transition: box-shadow ease-in-out 0.5s;
 }
-.timer-container[aria-active="true"] {
+.timer-container[is-active="true"] {
   box-shadow: 0 0 12px 0 var(--color-primary);
 }
 
@@ -60,6 +62,7 @@
   position: relative;
   justify-content: center;
   align-items: center;
+  transition: opacity 0.5s ease-out;
 }
 .timer-timer-container[hide-circle="true"] {
   flex: 0 0 85px;
@@ -83,6 +86,8 @@
 }
 
 .timer-tasks-list {
+  overflow-y: auto;
+  overflow-x: hidden;
   flex: 1 1 0px;
   gap: 10px;
   justify-content: start;
@@ -96,3 +101,6 @@
   padding: 0px !important;
 }
 
+.timer-container[is-active="false"] .timer-timer-container {
+  opacity: 0.75;
+}

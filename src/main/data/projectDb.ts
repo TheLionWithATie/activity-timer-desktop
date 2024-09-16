@@ -37,6 +37,10 @@ export class ProjectDb extends FileWriter  {
       return this.getProject(key);
     });
 
+    ipcMain.handle('active-task-get', (event) => {
+      return this.getActiveLap();
+    });
+
     ipcMain.handle('project-create', (event, projectName) => {
       return this.createProject(projectName);
     });

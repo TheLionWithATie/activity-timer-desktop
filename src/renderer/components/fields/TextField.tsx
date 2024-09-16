@@ -7,7 +7,7 @@ export interface IFieldErrorMessage {
 
 
 export function TextField({ value, onChange, validator, onCancel, onFocus }: {
-  value?: string,
+  value?: string, 
   onChange: (value: string) => void,
   onCancel?: () => void,
   onFocus?: () => void,
@@ -19,7 +19,7 @@ export function TextField({ value, onChange, validator, onCancel, onFocus }: {
   validator: (value: string) => string | undefined | false }
 ) {
   const [ innerValue, setInnerValue ] = useState(value);
-  const [ isEditing, setIsEditing ] = useState(value === undefined);
+  const [ isEditing, setIsEditing ] = useState(!value);
   const [ errorText, setErrorText ] = useState("");
 
   const onSubmit = () => {

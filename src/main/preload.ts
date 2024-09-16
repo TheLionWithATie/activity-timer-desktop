@@ -27,6 +27,9 @@ export const PRELOAD_ACTIONS = {
     "getProject": async (key: string) => {
       return ipcRenderer.invoke('project-get', key) as Promise<IProject>;
     },
+    "getActiveTask": async () => {
+      return ipcRenderer.invoke('active-task-get') as Promise<ITask>;
+    },
     "createProject": async (projectName: string) => {
       return ipcRenderer.invoke('project-create', projectName) as Promise<IProjectItem>;
     },

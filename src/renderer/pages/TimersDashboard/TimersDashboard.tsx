@@ -12,7 +12,7 @@ export const appBehaviourSubject = document.createElement("behaviour-subject");
 
 export function TimersDashboard() {
   const [ projects, setProjects ] = useState<IProjectItem[]>([]);
-  const [ newProjectName, setNewProjectName ] = useState<string | undefined>("");
+  const [ newProjectName, setNewProjectName ] = useState<string | 0>(0);
 
   useEffect(() => {
     window.electron.projects.getProjects().then((projects) => setProjects(projects || []));
@@ -32,7 +32,7 @@ export function TimersDashboard() {
         />)
       }
       {
-        newProjectName === undefined ?
+        newProjectName !== 0 ?
           <div className="timer-container">
             <div className="timer-header">
               <TextField
@@ -41,7 +41,7 @@ export function TimersDashboard() {
                   window.electron.projects.createProject(value).then((p) => {
                     setProjects([...projects, p]);
                   });
-                  setNewProjectName(undefined);
+                  setNewProjectName("");
                 }}
                 onCancel={() => setNewProjectName("") }
                 validator={(value: string) => {
@@ -50,7 +50,7 @@ export function TimersDashboard() {
             </div>
           </div>
         :
-          <button className="timer-container dashboard-add-project-btn" type="button" onClick={ () => setNewProjectName(undefined) }>
+          <button className="timer-container dashboard-add-project-btn" type="button" onClick={ () => setNewProjectName("") }>
             <img src={ AddIcon } />
           </button>
       }

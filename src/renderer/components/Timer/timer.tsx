@@ -21,6 +21,7 @@ import { projectNameValidator, taskNameValidator } from "../../../util/validator
 import { TimerTask } from "../TimerTask/TimerTask";
 import { appBehaviourSubject } from "../../pages/TimersDashboard/TimersDashboard";
 import { Clock } from "../Clock/Clock";
+import { electron } from "process";
 
 
 
@@ -35,15 +36,35 @@ function Timer({ projectItem, projects, onInfoChanges }: {
 
   const [ totalTime, setTotalTime ] = useState<number>(0);
   const [ lastActiveTask, setLastActiveTask ] = useState<ITask>();
-  const [ activeTask, setActiveTask ] = useState<ITask>();
-  const [ startTime, setStartTime ] = useState<number>(0);
-  const [ newTaskName, setNewTaskName ] = useState<string | undefined>("");
+  const [ activeTask, _setActiveTask ] = useState<ITask>();
+  
+  const _activeTaskRef = useRef(activeTask);
+  const setActiveTask = (data: ITask | undefined) => {
+    _activeTaskRef.current = data;
+    _setActiveTask(data);
+  };
 
-  const onActiveTaskChanged = useCallback((e: any) => {
+  const [ startTime, setStartTime ] = useState<number>(0);
+  const [ newTaskName, setNewTaskName ] = useState<string | 0>(0);
+
+  const onActiveTaskChanged = (e: any) => {
+    const activeTask = _activeTaskRef.current;
     if (activeTask && e.detail.key !== activeTask.key) {
-      stopActiveTaskTimer();
+      window.electron.projects.getActiveTask().then((task) => {
+        if (task && task.key === activeTask.key) {
+          stopActiveTaskTimer();
+        } else {
+          return window.electron.projects.getProject(project!.key).then((project) => {
+            setActiveTask(undefined);
+            setStartTime(0);
+            setProject(project);
+            setTotalTime( project.tasks.reduce((acc, task) => acc + task.totalTime, 0) );
+          });
+        }
+      });
+
     }
-  }, []);
+  };
 
   useEffect(() => {
     appBehaviourSubject.addEventListener("active-task-changed", onActiveTaskChanged);
@@ -71,6 +92,7 @@ function Timer({ projectItem, projects, onInfoChanges }: {
       await stopActiveTaskTimer();
     }
 
+
     const startTime = Date.now();
     setActiveTask(task);
     setStartTime(startTime);
@@ -82,7 +104,7 @@ function Timer({ projectItem, projects, onInfoChanges }: {
   }
 
   const stopActiveTaskTimer = () => {
-    setLastActiveTask(activeTask);
+    setLastActiveTask(_activeTaskRef.current);
     setActiveTask(undefined);
     setStartTime(0);
 
@@ -92,7 +114,7 @@ function Timer({ projectItem, projects, onInfoChanges }: {
     });
   }
 
-  let showCircle = (project?.tasks.length === 1 && newTaskName === "");
+  let showCircle = (project?.tasks.length === 1 && newTaskName === 0);
 
   return (
     <div id={ "timer-" + projectItem.fileName } className="timer-container" aria-active={ !!activeTask }>
@@ -168,19 +190,20 @@ function Timer({ projectItem, projects, onInfoChanges }: {
           }
 
           {
-            newTaskName === undefined ? <TextField
-            value={ newTaskName }
-            onCancel={() => setNewTaskName("")}
-            onChange={(value: string) => {
-
-              window.electron.projects.addTask(project!.key, value).then((project) => {
-                setProject({ ...project! });
-              })
-            }}
-            validator={(value: string) => {
-              return taskNameValidator(project?.tasks, value);
-            }}
-            /> : null
+            newTaskName !== 0 ? 
+              <TextField
+                value={ newTaskName }
+                onCancel={() => setNewTaskName(0)}
+                onChange={(value: string) => {
+                  setNewTaskName(0);
+                  window.electron.projects.addTask(project!.key, value).then((project) => {
+                    setProject({ ...project! });
+                  })
+                }}
+                validator={(value: string) => {
+                  return taskNameValidator(project?.tasks, value);
+                }}
+              /> : null
           }
         </div> : null
       }
@@ -199,7 +222,7 @@ function Timer({ projectItem, projects, onInfoChanges }: {
           <img src={ activeTask ? PlayIcon : PauseIcon }/>
         </button>
         <button className="btn btn-no-background flex-grow" onClick={() => {
-          setNewTaskName(undefined);
+          setNewTaskName("");
         }}>
           <img src={ AddIcon }/>
           <span>TARGET</span>

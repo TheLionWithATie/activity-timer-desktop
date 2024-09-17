@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./fields.css";
 
 export interface IFieldErrorMessage {
@@ -6,8 +6,9 @@ export interface IFieldErrorMessage {
 }
 
 
-export function TextField({ value, onChange, validator, onCancel, onFocus }: {
-  value?: string, 
+export function TextField({ value, setFocus, onChange, validator, onCancel, onFocus }: {
+  value?: string,
+  setFocus?: boolean,
   onChange: (value: string) => void,
   onCancel?: () => void,
   onFocus?: () => void,
@@ -28,6 +29,10 @@ export function TextField({ value, onChange, validator, onCancel, onFocus }: {
       onChange(innerValue.trim());
     }
   }
+
+  useEffect(() => {
+    if (setFocus != null && setFocus !== isEditing) setIsEditing(setFocus);
+  }, [ setFocus ]);
 
   const onBlur = () => {
     setErrorText("");

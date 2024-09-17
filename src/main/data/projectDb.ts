@@ -146,6 +146,7 @@ export class ProjectDb extends FileWriter  {
     const cachedProject = cachedProjects.find(cp => cp.fileName === projectKey);
     if (!cachedProject) return Promise.reject(false);
 
+
     const project = await this.readData(cachedProject?.fileName + ".json") as IProject;
     project.tasks.push({
       key: (new Date().getTime()).toString(16),
@@ -179,14 +180,24 @@ export class ProjectDb extends FileWriter  {
     return project;
   }
   private async startTaskLap(projectKey: string, taskKey: string, startTime: number) {
+
+    const activeLap = await this.getActiveLap();
+    if (activeLap) {
+      if (activeLap.taskKey === taskKey) return activeLap;
+
+      await this.endTaskLap(new Date().getTime());
+    }
+
     const cachedProjects = (await this.cachedProjects);
     const cachedProject = cachedProjects.find(cp => cp.fileName === projectKey);
     const project = await this.readData(cachedProject?.fileName + ".json") as IProject;
     const task = project.tasks.find(t => t.key === taskKey);
 
+    if (!task) throw Error("No task found " + taskKey);
+
     (await storeService).set("$activeLap", {
       projectKey: cachedProject!.fileName,
-      taskKey: task!.key,
+      taskKey: task.key,
       startDateSinceEpoch: startTime
     });
 

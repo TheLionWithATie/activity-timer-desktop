@@ -24,8 +24,9 @@ import { Clock } from "../Clock/Clock";
 import { electron } from "process";
 import { ProjectSettingsOverlay, ProjectSettingsOverlayAction } from "../ProjectOverlay/ProjectSettingsOverlay";
 import { TimerTasksList } from "./TimerTasksList";
+import { ProjectNotesOverlay, ProjectNotesOverlayAction } from "../ProjectOverlay/ProjectNotesOverlay";
 
-
+type ProjectOverlayAction = ProjectSettingsOverlayAction | ProjectNotesOverlayAction;
 
 function Timer({ projectItem, projects, onInfoChanges }: {
   projectItem: IProjectItem,
@@ -117,11 +118,16 @@ function Timer({ projectItem, projects, onInfoChanges }: {
     });
   }
 
-  const handleSettingsAction = (e: ProjectSettingsOverlayAction) => {
+  const handleSettingsAction = (e: ProjectOverlayAction, ...args: any) => {
     switch (e) {
-
       case "edit-project-name":
+        setOverlay("");
         setIsEditingName(true);
+        return;
+      case "changed-project":
+        setProject(args[0]);
+        if (args[1]) setOverlay("");
+
         return;
       case "complete-project":
         window.electron.projects.editProjectInfo(projectItem.fileName, {
@@ -143,7 +149,8 @@ function Timer({ projectItem, projects, onInfoChanges }: {
     <div id={ "timer-" + projectItem.fileName } className="timer-container" is-active={ (activeTask != null).toString() }>
       {
         project ? [
-          <ProjectSettingsOverlay key="project-settings" show={ overlay === "settings" } onAction={ handleSettingsAction } project={ project } />
+          <ProjectNotesOverlay key="project-notes" show={ overlay === "notes" } onAction={ handleSettingsAction } project={ project } />,
+          <ProjectSettingsOverlay key="project-settings" show={ overlay === "settings" } onAction={ handleSettingsAction } project={ project } />,
         ] : null
       }
       <style>
@@ -154,10 +161,11 @@ function Timer({ projectItem, projects, onInfoChanges }: {
         ` }
       </style>
       <div className="timer-header" is-editing-name={ isEditingName.toString() }>
-        <button className="btn-icon btn-no-background" type="button">
+        <button className="btn-icon btn-no-background" type="button" onClick={ () => setOverlay("notes") }>
           <img src={ NoteIcon } />
         </button>
         <TextField
+          setFocus={ isEditingName }
           value={ project?.name || projectItem.projectName }
           onFocus={() => {
             setIsEditingName(true);

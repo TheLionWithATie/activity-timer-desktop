@@ -18,7 +18,7 @@ export function TimerCircle ({ time, target, primaryColor, secondaryColor }: { t
         cy="50"
         r={radius}
         stroke="white"
-        strokeWidth="4"
+        strokeWidth="0"
         fill="transparent"
       />
       <circle

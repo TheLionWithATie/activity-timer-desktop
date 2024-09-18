@@ -102,6 +102,7 @@ export class ProjectDb extends FileWriter  {
       key: fileName,
       name: String(projectName),
       description: "",
+      color: "#1B31FF",
       tasks: [
         {
           key: (new Date().getTime()).toString(16),
@@ -131,6 +132,7 @@ export class ProjectDb extends FileWriter  {
     if (editedProject.completed) project.completed = cachedProjects[cachedProjectIndex].completed = editedProject.completed;
     if (editedProject.description) project.description = editedProject.description;
     if (editedProject.target) project.target = editedProject.target;
+    if (editedProject.color) project.color = editedProject.color;
 
     // update project file
     await this.saveData(project.key + ".json", project);

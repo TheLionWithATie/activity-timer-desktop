@@ -32,6 +32,9 @@
   left: 0;
   border-radius: 15px 0 15px 0;
 }
+.overlay-close-btn.left:hover {
+  background-color: var(--error-color);
+}
 .overlay-close-btn.right {
   right: 0;
   border-radius: 0 15px 0 15px;
@@ -87,3 +90,39 @@
 .overlay-textarea[is-empty="true"] {
   color: var(--color-foreground-25);
 }
+
+.color-swatch {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.color-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0px solid transparent;
+  transition: transform 0.2s ease-out, border 0.5s ease-out;
+  cursor: pointer;
+}
+.color-btn[is-selected="true"],
+input[type="color"][is-selected="true"] {
+  border: 5px solid var(--color-foreground);
+}
+.color-btn:hover {
+  transform: scale(1.2);
+}
+input[type="color"]::-webkit-color-swatch,
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border: none;
+}
+input[type="color"] {
+  border-radius: 10px;
+  padding: 0px;
+  border: none;
+  margin: none;
+
+  overflow: hidden;
+  border-radius: 15px;
+}
+

@@ -6,5 +6,6 @@ export interface IProject {
   description: string;
   tasks: ITask[];
   target: number;
+  color: string;
   completed: boolean;
 }

@@ -156,7 +156,7 @@ function Timer({ projectItem, projects, onInfoChanges }: {
       <style>
         { `
           #timer-${ projectItem.fileName } {
-            --color-primary: ${ "blue" };
+            --color-primary: ${ project?.color || "#000" };
           }
         ` }
       </style>

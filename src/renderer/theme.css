@@ -197,3 +197,7 @@ input[type="color"] {
   min-height: 40px;
   width: 100%;
 }
+.label {
+  margin-bottom: 5px;
+  color: var(--color-foreground-75);
+}

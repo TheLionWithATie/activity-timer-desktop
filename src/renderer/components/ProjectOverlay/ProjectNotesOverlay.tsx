@@ -1,6 +1,5 @@
 import { IProject } from '../../models/data/project';
 import { ConfirmButton } from '../ConfirmButton';
-import { ISlide, Slides } from '../slides';
 import { button, div, input } from 'framer-motion/client';
 import { useEffect, useState } from 'react';
 

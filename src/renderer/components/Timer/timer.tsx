@@ -137,6 +137,11 @@ function Timer({ projectItem, projects, onInfoChanges }: {
           appBehaviourSubject.dispatchEvent(new CustomEvent("project-completed", { detail: project }));
         });
         return;
+      case "delete-project":
+        window.electron.projects.deleteProject(projectItem.fileName).then((project) => {
+          appBehaviourSubject.dispatchEvent(new CustomEvent("project-deleted", { detail: project }));
+        });
+        return;
       default:
         setOverlay("");
         return;
@@ -150,7 +155,7 @@ function Timer({ projectItem, projects, onInfoChanges }: {
       {
         project ? [
           <ProjectNotesOverlay key="project-notes" show={ overlay === "notes" } onAction={ handleSettingsAction } project={ project } />,
-          <ProjectSettingsOverlay key="project-settings" show={ overlay === "settings" } onAction={ handleSettingsAction } project={ project } />,
+          <ProjectSettingsOverlay key="project-settings" show={ overlay === "settings" } onAction={ handleSettingsAction } projectTotalTime={ totalTime } project={ project } />,
         ] : null
       }
       <style>
@@ -212,6 +217,7 @@ function Timer({ projectItem, projects, onInfoChanges }: {
           projectChanged={ setProject }
           startTaskTimer={ startTaskTimer }
           createNewTask={ createNewTask }
+          createNewTaskChange={ setCreateNewTask }
         /> : null
       }
 

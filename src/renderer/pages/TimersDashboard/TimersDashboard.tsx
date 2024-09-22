@@ -41,9 +41,9 @@ export function TimersDashboard() {
                   window.electron.projects.createProject(value).then((p) => {
                     setProjects([...projects, p]);
                   });
-                  setNewProjectName("");
+                  setNewProjectName(0);
                 }}
-                onCancel={() => setNewProjectName("") }
+                onCancel={() => setNewProjectName(0) }
                 validator={(value: string) => {
                   return projectNameValidator(projects, value);
                 }} />

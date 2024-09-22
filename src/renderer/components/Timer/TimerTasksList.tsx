@@ -13,6 +13,7 @@ export function TimerTasksList({
   projectChanged,
   startTaskTimer,
   createNewTask,
+  createNewTaskChange,
 }: {
   activeTask: ITask | undefined,
   lastActiveTask: ITask | undefined,
@@ -20,6 +21,7 @@ export function TimerTasksList({
   projectChanged: (project: IProject) => void,
   startTaskTimer: (task: ITask) => void,
   createNewTask: boolean
+  createNewTaskChange: (value: boolean) => void
 }) {
   const [ newTaskName, setNewTaskName ] = useState<string | 0>(0);
   const [ activeTasks, setActiveTasks ] = useState<ITask[]>([]);
@@ -27,6 +29,8 @@ export function TimerTasksList({
 
   useEffect(() => {
     if (createNewTask) {
+      setNewTaskName("");
+    } else {
       setNewTaskName(0);
     }
   }, [createNewTask]);
@@ -60,11 +64,11 @@ export function TimerTasksList({
       }
       {
         newTaskName !== 0 ?
-          <TextField
+          <TextField className="timer-task-description"
             value={ newTaskName }
-            onCancel={() => setNewTaskName(0)}
+            onCancel={() => createNewTaskChange(false)}
             onChange={(value: string) => {
-              setNewTaskName(0);
+              createNewTaskChange(false)
               window.electron.projects.addTask(project!.key, value).then((project) => {
                 projectChanged({ ...project! });
               })

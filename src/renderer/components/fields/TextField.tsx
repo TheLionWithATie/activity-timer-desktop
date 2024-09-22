@@ -6,12 +6,13 @@ export interface IFieldErrorMessage {
 }
 
 
-export function TextField({ value, setFocus, onChange, validator, onCancel, onFocus }: {
+export function TextField({ value, setFocus, onChange, validator, onCancel, onFocus, className }: {
   value?: string,
   setFocus?: boolean,
   onChange: (value: string) => void,
   onCancel?: () => void,
   onFocus?: () => void,
+  className?: string,
   /**
    *
    * @param value - The value of the text field
@@ -45,7 +46,7 @@ export function TextField({ value, setFocus, onChange, validator, onCancel, onFo
   return (
     <div className="field-container">
       {
-        isEditing ? <input className="field-input"
+        isEditing ? <input className={" field-input " + (className || "")}
             autoFocus
             type="text"
             onFocus={ onFocus }

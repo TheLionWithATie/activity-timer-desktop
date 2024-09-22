@@ -7,6 +7,7 @@
   cursor: pointer;
 }
 .timer-task > *,
+.timer-task-description,
 .timer-task-description input {
   font-family: 'Roboto';
   font-size: 20px !important;

@@ -33,7 +33,7 @@
   border-radius: 15px 0 15px 0;
 }
 .overlay-close-btn.left:hover {
-  background-color: var(--error-color);
+  background-color: var(--color-error) !important;
 }
 .overlay-close-btn.right {
   right: 0;

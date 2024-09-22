@@ -6,6 +6,7 @@ import { ConfirmButton } from '../ConfirmButton';
 import { ISlide, Slides } from '../Slides';
 import { button, div, hr, input } from 'framer-motion/client';
 import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from "framer-motion";
 
 import CloseIcon from 'src/icons/close.svg';
 import TextIcon from "src/icons/edit-text.svg";
@@ -14,7 +15,7 @@ import FullscreenIcon from "src/icons/go-fullscreen.svg";
 import MiniplayerIcon from "src/icons/miniplayer.svg";
 import ColorIcon from "src/icons/color.svg";
 import CheckIcon from "src/icons/check.svg";
-import { AnimatePresence, motion } from "framer-motion";
+import DeleteIcon from "src/icons/delete.svg";
 
 
 const variants = {
@@ -47,16 +48,18 @@ const COLORS = [
   "#e6310a",
 ];
 
-export type ProjectSettingsOverlayAction = "" | "changed-project" | "edit-project-name" | "edit-task" | "go-fullscreen" | "go-miniscreen" | "complete-project";
+export type ProjectSettingsOverlayAction = "" | "delete-project" | "changed-project" | "edit-project-name" | "edit-task" | "go-fullscreen" | "go-miniscreen" | "complete-project";
 
 export function ProjectSettingsOverlay({
   show,
   onAction,
   project,
+  projectTotalTime,
 }: {
   show: boolean,
   onAction: (value: ProjectSettingsOverlayAction, ...args: any) => void,
   project: IProject,
+  projectTotalTime: number
 }) {
   const [ slide, setSlide ] = useState<ISlide>({
     index: 0,
@@ -131,10 +134,15 @@ export function ProjectSettingsOverlay({
                 <img src={ MiniplayerIcon } />
                 View timer in mini-window
               </button>,
-              <ConfirmButton className="option-btn btn-no-background" onConfirmed={ () => onAction("complete-project") } text={[
-                <img src={ TextIcon } />,
-                "Set project as completed"
-              ]} />,
+              projectTotalTime === 0 ?
+                <ConfirmButton className="option-btn btn-no-background" onConfirmed={ () => onAction("delete-project") } text={[
+                  <img src={ DeleteIcon } />,
+                  "Delete project",
+                ]} />
+                : <ConfirmButton className="option-btn btn-no-background" onConfirmed={ () => onAction("complete-project") } text={[
+                  <img src={ CheckIcon } />,
+                  project.completed ? "Set project as completed" : "Set project as uncompleted",
+                ]} />,
             ],
             [
               [

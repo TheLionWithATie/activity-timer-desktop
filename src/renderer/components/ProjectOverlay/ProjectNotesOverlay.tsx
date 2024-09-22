@@ -48,7 +48,7 @@ export function ProjectNotesOverlay({
       <button className="overlay-close-btn left" type="button" onClick={ () => onAction("") }>
         <img src={ CloseIcon } />
       </button>
-      <button className="overlay-close-btn right" disabled={ canSave() } type="button" onClick={ () => setProjectNotes(true) }>
+      <button className="overlay-close-btn right" disabled={ !canSave() } type="button" onClick={ () => setProjectNotes(true) }>
         <img src={ CheckIcon } />
       </button>
 

@@ -191,6 +191,8 @@ button:disabled, .btn:disabled, .btn-icon:disabled {
 
 input[type="color"] {
   -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   border: none;
   width: 100%;
   min-width: 40px;

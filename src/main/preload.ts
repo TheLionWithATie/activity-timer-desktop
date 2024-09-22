@@ -35,6 +35,9 @@ export const PRELOAD_ACTIONS = {
     "editProjectInfo": async (projectKey: string, editedProject: Partial<Omit<IProject, "tasks">> ) => {
       return ipcRenderer.invoke('project-edit-info', projectKey, editedProject) as Promise<IProject>;
     },
+    "deleteProject": async (projectKey: string) => {
+      return ipcRenderer.invoke('project-delete', projectKey) as Promise<IProject>;
+    },
     "addTask": async (projectKey: string, taskName: string) => {
       return ipcRenderer.invoke('project-add-task', projectKey, taskName) as Promise<IProject>;
     },

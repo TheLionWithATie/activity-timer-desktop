@@ -1,12 +1,10 @@
 {
-  "name": "electron-react-boilerplate",
-  "version": "4.6.0",
-  "description": "A foundation for scalable desktop apps",
-  "license": "MIT",
+  "name": "activity-timer",
+  "description": "A simple activity tracker app.",
+  "version": "0.5.0",
+  "license": "GNU",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://github.com/electron-react-boilerplate"
+    "name": "Mattia Reguzzoni"
   },
   "main": "./dist/main/main.js",
   "scripts": {

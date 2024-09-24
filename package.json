@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "description": "A foundation for scalable desktop apps",
+  "name": "activity-timer-dev",
+  "description": "A simple activity tracker app.",
   "keywords": [
     "electron",
     "boilerplate",
@@ -12,27 +12,19 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/TheLionWithATie/activity-timer-desktop#readme",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/TheLionWithATie/activity-timer-desktop/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/TheLionWithATie/activity-timer-desktop.git"
   },
-  "license": "MIT",
+  "license": "GNU",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Mattia Reguzzoni"
   },
-  "contributors": [
-    {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
-    }
-  ],
+  "contributors": [],
   "main": "./.erb/dll/main.bundle.dev.js",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -138,6 +130,7 @@
     "electron": "^31.3.0",
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",
+    "electron-icon-builder": "^2.0.1",
     "electronmon": "^2.0.2",
     "eslint": "^8.49.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -178,8 +171,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "Activity Timer",
+    "appId": "com.TheLionWithATie.ActivityTimer",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -188,6 +181,7 @@
       "package.json"
     ],
     "mac": {
+      "icon": "./assets/icons/mac/icon.icns",
       "sign": ".erb/scripts/notarize.js",
       "notarize": false,
       "target": {
@@ -218,6 +212,7 @@
       ]
     },
     "win": {
+      "icon": "./assets/icons/win/icon.ico",
       "target": [
         "nsis"
       ]
@@ -238,12 +233,9 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "TheLionWithATie",
+      "repo": "TheLionWithATie"
     }
-  },
-  "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
   "devEngines": {
     "node": ">=14.x",

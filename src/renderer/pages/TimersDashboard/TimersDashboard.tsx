@@ -4,11 +4,13 @@ import { IProjectItem } from "../../models/data/projectItem";
 import AddIcon from "../../../icons/add.svg";
 
 import "./TimersDashboard.css";
+import { motion } from "framer-motion";
 import { TextField } from "../../components/fields/TextField";
 import { projectNameValidator } from "../../../util/validators";
 import { InfiniteSelector } from "../../components/infiniteSelector/InfiniteSelector";
 import { ITask } from "../../models/data/task";
 import { ActiveLap } from "../../../main/data/projectDb";
+import { div } from "framer-motion/client";
 
 export const appBehaviourSubject = document.createElement("behaviour-subject");
 
@@ -21,7 +23,7 @@ export function TimersDashboard() {
     window.electron.projects.getProjects().then((projects) => setProjects(projects || []));
     
     window.electron.projects.getActiveTask().then((task) => {
-      setInitialActiveTask(task);
+      setInitialActiveTask(task || null);
     });
   }, []);
 
@@ -64,7 +66,11 @@ export function TimersDashboard() {
                 <img src={ AddIcon } />
               </button>
           }
-        </div> : null
+        </div> : <motion.div className="loading-spinner" animate={{
+          scale: [1, 2, 2, 1, 1],
+          rotate: [0, 0, 270, 270, 0],
+          borderRadius: ["20%", "20%", "50%", "50%", "20%"],
+        }}></motion.div>
       }
     </div>
   );

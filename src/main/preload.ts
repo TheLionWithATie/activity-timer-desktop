@@ -21,34 +21,34 @@ export const PRELOAD_ACTIONS = {
   projects: {
     "getProjects": async (filter?: ProjectsListFilter) => {
       console.log('getProjects', filter);
-      return ipcRenderer.invoke('projects-get', filter) as Promise<IProjectItem[]>;
+      return ipcRenderer.invoke('projects-get', filter).catch(err => alert(err.message)) as Promise<IProjectItem[]>;
     },
     "getProject": async (key: string) => {
-      return ipcRenderer.invoke('project-get', key) as Promise<IProject>;
+      return ipcRenderer.invoke('project-get', key).catch(err => alert(err.message)) as Promise<IProject>;
     },
     "getActiveTask": async () => {
-      return ipcRenderer.invoke('active-task-get') as Promise<ActiveLap>;
+      return ipcRenderer.invoke('active-task-get').catch(err => alert(err.message)) as Promise<ActiveLap>;
     },
     "createProject": async (projectName: string) => {
-      return ipcRenderer.invoke('project-create', projectName) as Promise<IProjectItem>;
+      return ipcRenderer.invoke('project-create', projectName).catch(err => alert(err.message)) as Promise<IProjectItem>;
     },
     "editProjectInfo": async (projectKey: string, editedProject: Partial<Omit<IProject, "tasks">> ) => {
-      return ipcRenderer.invoke('project-edit-info', projectKey, editedProject) as Promise<IProject>;
+      return ipcRenderer.invoke('project-edit-info', projectKey, editedProject).catch(err => alert(err.message)) as Promise<IProject>;
     },
     "deleteProject": async (projectKey: string) => {
-      return ipcRenderer.invoke('project-delete', projectKey) as Promise<IProject>;
+      return ipcRenderer.invoke('project-delete', projectKey).catch(err => alert(err.message)) as Promise<IProject>;
     },
     "addTask": async (projectKey: string, taskName: string) => {
-      return ipcRenderer.invoke('project-add-task', projectKey, taskName) as Promise<IProject>;
+      return ipcRenderer.invoke('project-add-task', projectKey, taskName).catch(err => alert(err.message)) as Promise<IProject>;
     },
     "editTask": async (projectKey: string, taskKey: string, taskInfo: Partial<Omit<Omit<ITask, "key">, "projectKey">>) => {
-      return ipcRenderer.invoke('project-edit-task', projectKey, taskKey, taskInfo) as Promise<IProject>;
+      return ipcRenderer.invoke('project-edit-task', projectKey, taskKey, taskInfo).catch(err => alert(err.message)) as Promise<IProject>;
     },
     "startTaskLap": async (projectKey: string, taskKey: string, endTime: number) => {
-      return ipcRenderer.invoke('project-start-task-lap', projectKey, taskKey, endTime) as Promise<ActiveLap>;
+      return ipcRenderer.invoke('project-start-task-lap', projectKey, taskKey, endTime).catch(err => alert(err.message)) as Promise<ActiveLap>;
     },
     "endTaskLap": async (endTime: number) => {
-      return ipcRenderer.invoke('project-end-task-lap', endTime) as Promise<IProject>;
+      return ipcRenderer.invoke('project-end-task-lap', endTime).catch(err => alert(err.message)) as Promise<IProject>;
     }
   },
 };

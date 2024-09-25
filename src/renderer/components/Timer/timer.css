@@ -10,7 +10,7 @@
   border-radius: 15px;
   padding: 10px;
   gap: 10px;
-  width: 350px;
+  width: min(350px, 90vw);
   height: 540px;
   box-shadow: 0 0 0 0 var(--color-primary);
   transition: box-shadow ease-in-out 0.5s;
@@ -37,6 +37,7 @@
 .timer-header > button > img {
   width: 40px;
   height: 40px;
+  opacity: 0.5;
 }
 .timer-header .field-container {
   transition: opacity 0.5s ease-out;

@@ -25,12 +25,14 @@ import { electron } from "process";
 import { ProjectSettingsOverlay, ProjectSettingsOverlayAction } from "../ProjectOverlay/ProjectSettingsOverlay";
 import { TimerTasksList } from "./TimerTasksList";
 import { ProjectNotesOverlay, ProjectNotesOverlayAction } from "../ProjectOverlay/ProjectNotesOverlay";
+import { ActiveLap } from "../../../main/data/projectDb";
 
 type ProjectOverlayAction = ProjectSettingsOverlayAction | ProjectNotesOverlayAction;
 
-function Timer({ projectItem, projects, onInfoChanges }: {
+function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
   projectItem: IProjectItem,
   projects: IProjectItem[],
+  initialActiveLap: ActiveLap | null,
   onInfoChanges: (value: IProjectItem) => void
 } ) {
   const [ project, setProject ] = useState<IProject>();
@@ -39,27 +41,27 @@ function Timer({ projectItem, projects, onInfoChanges }: {
   const [ isEditingName, setIsEditingName ] = useState(false);
 
   const [ totalTime, setTotalTime ] = useState<number>(0);
-  const [ lastActiveTask, setLastActiveTask ] = useState<ITask>();
-  const [ activeTask, _setActiveTask ] = useState<ITask>();
+  const [ lastActiveTask, setLastActiveTask ] = useState<ITask | null>( null );
+  const [ activeLap, _setActiveLap ] = useState<ActiveLap | null>( initialActiveLap || null );
 
-  const _activeTaskRef = useRef(activeTask);
-  const setActiveTask = (data: ITask | undefined) => {
+  const _activeTaskRef = useRef(activeLap);
+  const setActiveLap = (data: ActiveLap | null) => {
     _activeTaskRef.current = data;
-    _setActiveTask(data);
+    _setActiveLap(data);
   };
 
   const [ startTime, setStartTime ] = useState<number>(0);
   const [ createNewTask, setCreateNewTask ] = useState<boolean>(false);
 
   const onActiveTaskChanged = (e: any) => {
-    const activeTask = _activeTaskRef.current;
-    if (activeTask && e.detail.key !== activeTask.key) {
-      window.electron.projects.getActiveTask().then((task) => {
-        if (task && task.key === activeTask.key) {
+    const activeLap = _activeTaskRef.current;
+    if (activeLap && e.detail.key !== activeLap.taskKey) {
+      window.electron.projects.getActiveTask().then((lap) => {
+        if (lap && lap.projectKey === activeLap.projectKey && lap.taskKey === activeLap.taskKey) {
           stopActiveTaskTimer();
         } else {
           return window.electron.projects.getProject(project!.key).then((project) => {
-            setActiveTask(undefined);
+            setActiveLap(null);
             setStartTime(0);
             setProject(project);
             setTotalTime( project.tasks.reduce((acc, task) => acc + task.totalTime, 0) );
@@ -86,30 +88,32 @@ function Timer({ projectItem, projects, onInfoChanges }: {
 
       const t = p.tasks[0];
     });
+
   }, [projectItem.fileName])
 
 
   const startTaskTimer = async (task: ITask) => {
-    if (activeTask) {
-      if (activeTask.key === task.key) return;
+    if (activeLap) {
+      if (activeLap.taskKey === task.key) return;
 
       await stopActiveTaskTimer();
     }
 
 
     const startTime = Date.now();
-    setActiveTask(task);
     setStartTime(startTime);
     window.electron.projects.startTaskLap(project!.key, task.key, startTime).then((task) => {
-      setActiveTask(task);
+      setActiveLap(task);
     });
 
     appBehaviourSubject.dispatchEvent(new CustomEvent("active-task-changed", { detail: task }));
   }
 
   const stopActiveTaskTimer = () => {
-    setLastActiveTask(_activeTaskRef.current);
-    setActiveTask(undefined);
+    if (project && activeLap) 
+        setLastActiveTask(project.tasks.find(t => t.key === activeLap.taskKey) || null);
+
+    setActiveLap(null);
     setStartTime(0);
 
     return window.electron.projects.endTaskLap(Date.now()).then((project) => {
@@ -151,7 +155,7 @@ function Timer({ projectItem, projects, onInfoChanges }: {
   let showCircle = (project?.tasks.length === 1 && !createNewTask);
 
   return (
-    <div id={ "timer-" + projectItem.fileName } className="timer-container" is-active={ (activeTask != null).toString() }>
+    <div id={ "timer-" + projectItem.fileName } className="timer-container" is-active={ (activeLap != null).toString() }>
       {
         project ? [
           <ProjectNotesOverlay key="project-notes" show={ overlay === "notes" } onAction={ handleSettingsAction } project={ project } />,
@@ -207,12 +211,12 @@ function Timer({ projectItem, projects, onInfoChanges }: {
               />
             </div> : null
         }
-        <Clock totalTime={ totalTime } startTime={ startTime } isRunning={ !!activeTask } showSeconds={ showCircle ? true : "inline" } />
+        <Clock totalTime={ totalTime } startTime={ startTime } isRunning={ !!activeLap } showSeconds={ showCircle ? true : "inline" } />
       </div>
       {
         (!showCircle && project) ? <TimerTasksList
           project={ project }
-          activeTask={ activeTask }
+          activeLap={ activeLap }
           lastActiveTask={ lastActiveTask }
           projectChanged={ setProject }
           startTaskTimer={ startTaskTimer }
@@ -230,8 +234,8 @@ function Timer({ projectItem, projects, onInfoChanges }: {
           }
           <span>TARGET</span>
         </button>
-        <button className="btn-icon button" onClick={ () => activeTask ? stopActiveTaskTimer() : startTaskTimer(lastActiveTask || project!.tasks![0] ) }>
-          <img src={ activeTask ? PlayIcon : PauseIcon }/>
+        <button className="btn-icon button" onClick={ () => activeLap ? stopActiveTaskTimer() : startTaskTimer(lastActiveTask || project!.tasks![0] ) }>
+          <img src={ activeLap ? PlayIcon : PauseIcon }/>
         </button>
         <button className="btn btn-no-background flex-grow" onClick={() => {
           setCreateNewTask(true);

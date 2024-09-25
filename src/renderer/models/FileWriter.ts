@@ -44,6 +44,18 @@ export abstract class FileWriter {
         })
       });
   }
+  
+  protected deleteFile(fileName: string) {
+      return new Promise<boolean>((resolve, reject) => {
+        this._fs.unlink(this._path.join(this._app.getPath('userData'), this.folderName, fileName), err => {
+            if (err) {
+              console.log(err);
+              return resolve(false);
+            }
+            resolve(true);
+        })
+      });
+  }
 
   protected readData(fileName: string): Promise<any> {
       return new Promise(async (resolve, reject) => {

@@ -67,9 +67,9 @@ body[data-theme="dark"] {
 }
 
 body[data-theme="light"] {
-  --color-background: #e6e6e6;
+  --color-background: #e8eded;
   --color-background-50: #e6e6e680;
-  --color-card: #c9c9c9;
+  --color-card: #ffffff;
   --color-error: #db4141;
 
   --color-foreground: #000;
@@ -81,6 +81,9 @@ body[data-theme="light"] {
   --color-foreground-0: rgba(0, 0, 0, 0);
 
   --brightness-change: 0.9;
+}
+body[data-theme="light"] img.icon {
+  filter: invert(1);
 }
 
 body {

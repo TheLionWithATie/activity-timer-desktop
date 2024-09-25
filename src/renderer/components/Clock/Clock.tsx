@@ -48,7 +48,7 @@ export function Clock({
 
     return () => clearInterval(intervalId);
 
-  }, [ startTime ])
+  }, [ startTime, isRunning ])
 
 
   return (

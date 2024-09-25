@@ -114,46 +114,46 @@ export function ProjectSettingsOverlay({
       <div className='slides-container flex-column'>
         <Slides className='options flex-column' children={[
             [
-              <button type="button" className="option-btn btn-no-background" onClick={ () => onAction("edit-project-name") }>
+              <button key="edit-name" type="button" className="option-btn btn-no-background" onClick={ () => onAction("edit-project-name") }>
                 <img src={ TextIcon } />
                 Edit project name
               </button>,
-              <button type="button" className="option-btn btn-no-background" onClick={ () => setSlide({ direction: 1, index: 1 }) }>
+              <button key="edit-color" type="button" className="option-btn btn-no-background" onClick={ () => setSlide({ direction: 1, index: 1 }) }>
                 <img src={ ColorIcon } />
                 Change project color
               </button>,
-              <button type="button" disabled={ project.tasks.length < 2 } className="option-btn btn-no-background" onClick={ () => setSlide({ direction: 1, index: 1 }) }>
+              <button key="edit-tasks" type="button" disabled={ project.tasks.length < 2 } className="option-btn btn-no-background" onClick={ () => setSlide({ direction: 1, index: 1 }) }>
                 <img src={ TasksIcon } />
                 Edit tasks
               </button>,
-              <button type="button" className="option-btn btn-no-background" onClick={ () => onAction("go-fullscreen") }>
+              <button key="view-fullscreen" type="button" className="option-btn btn-no-background" onClick={ () => onAction("go-fullscreen") }>
                 <img src={ FullscreenIcon } />
                 Make timer fullscreen
               </button>,
-              <button type="button" className="option-btn btn-no-background" onClick={ () => onAction("go-miniscreen") }>
+              <button key="view-miniplayer" type="button" className="option-btn btn-no-background" onClick={ () => onAction("go-miniscreen") }>
                 <img src={ MiniplayerIcon } />
                 View timer in mini-window
               </button>,
               projectTotalTime === 0 ?
-                <ConfirmButton className="option-btn btn-no-background" onConfirmed={ () => onAction("delete-project") } text={[
-                  <img src={ DeleteIcon } />,
+                <ConfirmButton key="delete-btn" className="option-btn btn-no-background" onConfirmed={ () => onAction("delete-project") } text={[
+                  <img key="delete-icon" src={ DeleteIcon } />,
                   "Delete project",
                 ]} />
-                : <ConfirmButton className="option-btn btn-no-background" onConfirmed={ () => onAction("complete-project") } text={[
-                  <img src={ CheckIcon } />,
+                : <ConfirmButton key="confirm-btn" className="option-btn btn-no-background" onConfirmed={ () => onAction("complete-project") } text={[
+                  <img  key="check-icon" src={ CheckIcon } />,
                   project.completed ? "Set project as completed" : "Set project as uncompleted",
                 ]} />,
             ],
             [
               [
-                <div className="color-swatch">
+                <div key="color-swatch" className="color-swatch">
                   {
-                    COLORS.map(c => <div className="color-btn" is-selected={ (c === color).toString() } style={{ backgroundColor: c }} onClick={() => setColor(c) }></div>)
+                    COLORS.map(c => <div key={ "color-" + c } className="color-btn" is-selected={ (c === color).toString() } style={{ backgroundColor: c }} onClick={() => setColor(c) }></div>)
                   }
                 </div>,
-                <hr className="color-swatch-separator w-100" />,
+                <hr key="separator" className="color-swatch-separator w-100" />,
 
-                <div className="flex-column w-100 ">
+                <div key="color-custom" className="flex-column w-100">
                   <span className="label">Custom color:</span>
                   <input type="color" value={ color } is-selected={ (COLORS.indexOf(color) === -1).toString() } onChange={ e => setColor(e.target.value) } />
                 </div>,

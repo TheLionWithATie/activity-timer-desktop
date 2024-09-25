@@ -63,11 +63,16 @@ export class ProjectDb extends FileWriter  {
     ipcMain.handle('project-end-task-lap', (event, endTime) => {
       return this.endTaskLap(endTime);
     });
+    
+    ipcMain.handle('project-delete', (event, projectKey) => {
+      return this.deleteProject(projectKey);
+    });
   }
 
   private async getProjects(filter?: ProjectsListFilter) {
     const projects = (await storeService).get("$projects") || [];
 
+    
     switch (filter) {
       case "completed":
         return projects.filter(p => p.completed);
@@ -82,13 +87,13 @@ export class ProjectDb extends FileWriter  {
   }
 
   private async getProject(key: string) {
-    key = key.slice(0, 50).replace(/[. ,/\\\(\)]/, "_");
+    key = key.slice(0, 50).replace(/[. ,/\\\(\)]/g, "_");
     return this.readData(key + ".json") as Promise<IProject>;
   }
 
   private async createProject(projectName: string) {
     const cachedProjects = (await this.cachedProjects);
-    const fileName = projectName.trim().slice(0, 50).replace(/[. ,/\\\(\)]/, "_") + "_" + (new Date().getTime()).toString(16);
+    const fileName = projectName.trim().slice(0, 50).replace(/[. ,/\\\(\)]/g, "_") + "_" + (new Date().getTime()).toString(16);
 
     if (await this.doesFileExist(fileName + ".json")) throw Error("File already exists");
 
@@ -121,6 +126,25 @@ export class ProjectDb extends FileWriter  {
     storeService.then(store => store.set("$projects", cachedProjects));
     await this.saveData(fileName + ".json", newProject)
     return newProjectItem;
+  }
+  private async deleteProject(projectKey: string) {
+    const cachedProjects = (await this.cachedProjects);
+    const cachedProjectIndex = cachedProjects.findIndex(cp => cp.fileName === projectKey);
+    
+    if (cachedProjectIndex === -1) throw Error("Project not found");
+
+    const project = await this.readData(cachedProjects[cachedProjectIndex].fileName + ".json") as IProject;
+    await this.deleteFile(cachedProjects[cachedProjectIndex].fileName + ".json");
+
+    if (project.tasks.every(t => t.totalTime === 0)) {
+      cachedProjects.splice(cachedProjectIndex, 1);
+    } else {
+      cachedProjects[cachedProjectIndex].completed = true;
+    }
+    
+    storeService.then(store => store.set("$projects", cachedProjects));
+
+    return true;
   }
 
   private async editProjectInfo(projectKey: string, editedProject: Partial<Omit<IProject, "tasks">> ) {
@@ -197,13 +221,15 @@ export class ProjectDb extends FileWriter  {
 
     if (!task) throw Error("No task found " + taskKey);
 
-    (await storeService).set("$activeLap", {
+    const newActiveLap = {
       projectKey: cachedProject!.fileName,
       taskKey: task.key,
       startDateSinceEpoch: startTime
-    });
+    };
 
-    return task;
+    (await storeService).set("$activeLap", newActiveLap);
+
+    return newActiveLap;
   }
   private async endTaskLap(endTime: number) {
 

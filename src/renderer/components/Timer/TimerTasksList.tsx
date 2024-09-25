@@ -4,10 +4,11 @@ import { IProject } from "../../models/data/project";
 import { TextField } from "../fields/TextField";
 import { TimerTask } from "../TimerTask/TimerTask";
 import { ITask } from "../../models/data/task";
+import { ActiveLap } from "../../../main/data/projectDb";
 
 
 export function TimerTasksList({
-  activeTask,
+  activeLap,
   lastActiveTask,
   project,
   projectChanged,
@@ -15,8 +16,8 @@ export function TimerTasksList({
   createNewTask,
   createNewTaskChange,
 }: {
-  activeTask: ITask | undefined,
-  lastActiveTask: ITask | undefined,
+  activeLap: ActiveLap | null,
+  lastActiveTask: ITask | null,
   project: IProject,
   projectChanged: (project: IProject) => void,
   startTaskTimer: (task: ITask) => void,
@@ -46,7 +47,7 @@ export function TimerTasksList({
       key={ t.key }
       projectKey={ project.key }
       task={ t }
-      isActiveTask={ !!activeTask && t.key === activeTask.key }
+      isActiveTask={ !!activeLap && t.key === activeLap.taskKey }
       isLastPlayedTask={ !!lastActiveTask && t.key === lastActiveTask.key  }
       tasks={ project.tasks }
       onPlayClick={() => {

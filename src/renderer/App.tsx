@@ -20,7 +20,7 @@ export default function App() {
         <div className="selector-buttons">
           {
             routes.map(opt =>
-              <Link className="selector-button" to={ opt.route } aria-selected={ window.location.pathname == opt.route }>
+              <Link key={ "route-" + opt.name } className="selector-button" to={ opt.route } aria-selected={ window.location.pathname == opt.route }>
                { opt.name }
               </Link>
             )

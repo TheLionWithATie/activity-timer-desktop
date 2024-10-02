@@ -50,7 +50,6 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
     _setActiveLap(data);
   };
 
-  const [ startTime, setStartTime ] = useState<number>(0);
   const [ createNewTask, setCreateNewTask ] = useState<boolean>(false);
 
   const onActiveTaskChanged = (e: any) => {
@@ -62,7 +61,6 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
         } else {
           return window.electron.projects.getProject(project!.key).then((project) => {
             setActiveLap(null);
-            setStartTime(0);
             setProject(project);
             setTotalTime( project.tasks.reduce((acc, task) => acc + task.totalTime, 0) );
           });
@@ -101,7 +99,6 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
 
 
     const startTime = Date.now();
-    setStartTime(startTime);
     window.electron.projects.startTaskLap(project!.key, task.key, startTime).then((task) => {
       setActiveLap(task);
     });
@@ -110,11 +107,10 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
   }
 
   const stopActiveTaskTimer = () => {
-    if (project && activeLap) 
+    if (project && activeLap)
         setLastActiveTask(project.tasks.find(t => t.key === activeLap.taskKey) || null);
 
     setActiveLap(null);
-    setStartTime(0);
 
     return window.electron.projects.endTaskLap(Date.now()).then((project) => {
       setProject(project);
@@ -211,7 +207,7 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
               />
             </div> : null
         }
-        <Clock totalTime={ totalTime } startTime={ startTime } isRunning={ !!activeLap } showSeconds={ showCircle ? true : "inline" } />
+        <Clock totalTime={ totalTime } startTime={ activeLap ? activeLap.startDateSinceEpoch : 0 } isRunning={ !!activeLap } showSeconds={ showCircle ? true : "inline" } />
       </div>
       {
         (!showCircle && project) ? <TimerTasksList

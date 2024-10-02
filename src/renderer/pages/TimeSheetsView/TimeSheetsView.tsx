@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { InfiniteSelector } from "../../components/infiniteSelector/InfiniteSelector";
 import { IProjectItem } from "../../models/data/projectItem";
 import { formatMiliseconds, MONTH_NAMES, monthIndexToMonthObj } from "../../../util/time";
-import { TimeSheetTable } from "../../components/TimeSheetTable/TimeSheetTable";
+import { IDaySelection, TimeSheetTable } from "../../components/TimeSheetTable/TimeSheetTable";
 
 import "./TimeSheetsView.css";
+import { DayEventsView } from "../../components/DayEventsView/DayEventsView";
 
 export function TimeSheetsView() {
   const [ year, setYear ] = useState(new Date().getFullYear());
   const [ month, setMonth ] = useState( monthIndexToMonthObj( new Date().getMonth(), year ) );
+  const [ selectedDay, setSelectedDay ] = useState<IDaySelection>();
   const [ projects, setProjects ] = useState< { [key: string]: IProjectItem }>();
 
 
@@ -67,7 +69,8 @@ export function TimeSheetsView() {
         </div>
       </div>
       <div className="laps-view-container flex-column overflow-auto">
-        <TimeSheetTable monthIndex={ month.index } year={ month.year } projects={projects} />
+        <TimeSheetTable monthIndex={ month.index } year={ month.year } projects={projects} onSelectedDay={(day) => setSelectedDay(day)} />
+        { selectedDay && <DayEventsView year={selectedDay.year} month={selectedDay.month} day={selectedDay.day} />}
       </div>
 
     </div>

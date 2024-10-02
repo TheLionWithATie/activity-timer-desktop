@@ -24,31 +24,28 @@ export function Clock({
   isRunning: boolean,
   showSeconds?: boolean | "inline",
 }) {
+  const getCalculatedTime = () => (startTime ? Date.now() - startTime : 0) + (totalTime || 0);
   const [ formattedTime, setFormattedTime ] = useState<{
     formattedTime: string,
     formattedSubTime: string,
-  }>(getFormattedClockTime(totalTime));
+  }>(getFormattedClockTime(getCalculatedTime()));
 
   useEffect(() => {
     setFormattedTime(
-      getFormattedClockTime(totalTime)
+      getFormattedClockTime(getCalculatedTime())
     );
-  }, [totalTime]);
 
-  useEffect(() => {
     if (!isRunning) return;
 
     const intervalId = setInterval(() => {
-
       setFormattedTime(
-        getFormattedClockTime( Date.now() - startTime + totalTime )
+        getFormattedClockTime(getCalculatedTime())
       );
-
     }, 1000)
 
     return () => clearInterval(intervalId);
 
-  }, [ startTime, isRunning ])
+  }, [ totalTime, startTime, isRunning ])
 
 
   return (

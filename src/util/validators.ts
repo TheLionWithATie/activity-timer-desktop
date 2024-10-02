@@ -9,7 +9,7 @@ export function projectNameValidator(projects: IProjectItem[] = [], value?: stri
 
   if (value.match(/.,\/\\\(\)/)) return "The project name contains invalid characters";
 
-  if (projects.some(p => p.projectName === value)) return "The project name already exists";
+  if (projects.some(p => p.projectName.toLocaleLowerCase() === value.trim().toLocaleLowerCase())) return "The project name already exists";
 
   return false;
 }

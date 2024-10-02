@@ -129,8 +129,10 @@
 }
 
 .time-sheet-selected-day-container {
+  overflow: auto;
+  position: relative;
   position: relative;
   border: 1px solid white;
-  height: calc(24px * 30);
+  flex: 1 1 0;
   width: 50%;
 }

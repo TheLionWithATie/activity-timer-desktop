@@ -6,29 +6,34 @@ import "./TimeSheetTable.css";
 import { div } from "framer-motion/client";
 import { ITimeSheet } from "../../models/data/timeSheet";
 import { DayEventsView } from "../DayEventsView/DayEventsView";
+import { IProject } from "../../models/data/project";
 
 interface ISheetRow { name: string, days: { [date: number]: number }, totalTime: number }
-export interface IDaySelection { year: number, month: number, day: number };
+export interface IDaySelection { year: number, monthIndex: number, day: number };
 
 export function TimeSheetTable({
+  timeSheetData,
+  projectsData,
   monthIndex,
   year,
   projects,
-  onSelectedDay,
+  selectedDay,
+  onSelectedDayChange,
 }: {
+  timeSheetData: ITimeSheet[],
+  projectsData: { [key: string]: IProject | null },
   monthIndex: number,
   year: number,
   projects?: { [key: string]: IProjectItem },
-  onSelectedDay: (day: IDaySelection) => void
+  selectedDay: IDaySelection
+  onSelectedDayChange: (day: IDaySelection) => void
 }) {
   const [ days, setDays ] = useState<ReturnType<typeof getMonthDays>>([]);
   const [ rows, setRows ] = useState<ISheetRow[]>([]);
   const [ daysTotals, setDaysTotal ] = useState<{ [day: string]: number }>({});
-  const [ selectedDay, setSelectedDay ] = useState<IDaySelection>();
 
-  const selectDay = (year: number, month: number, day: number) => {
-    setSelectedDay({ year, month, day });
-    onSelectedDay({ year, month, day });
+  const selectDay = (year: number, monthIndex: number, day: number) => {
+    onSelectedDayChange({ year, monthIndex, day });
   };
 
   useEffect(() => {
@@ -36,53 +41,42 @@ export function TimeSheetTable({
   }, [monthIndex, year]);
 
   useEffect(() => {
-    const today = new Date();
-    selectDay(today.getFullYear(), today.getMonth() + 1, today.getDate());
-  }, []);
 
-  useEffect(() => {
-    if (monthIndex == null || year == null || !projects) return;
-
-    getLaps();
-  }, [monthIndex, year, projects]);
-
-  const getLaps = () => {
     if (!projects) return;
 
-    window.electron.timeSheet.getTimeSheetByMonth(monthIndex + 1, year).then((laps) => {
 
-      if (!laps || !laps.length) {
-        setRows([]);
-        setDaysTotal({});
-        return;
+    if (!timeSheetData || !timeSheetData.length) {
+      setRows([]);
+      setDaysTotal({});
+      return;
+    }
+
+    const tempDaysTotals: any = {};
+    const projectsObject = timeSheetData.reduce((p, c) => {
+      const totalLapTime = c.endDateSinceEpoch - c.startDateSinceEpoch;
+
+      if (!p[c.projectKey]) {
+        p[c.projectKey] = {
+          name: projects[c.projectKey].projectName || c.projectKey,
+          days: {
+            [c.date]: totalLapTime,
+          },
+          totalTime: totalLapTime,
+        }
+      } else {
+        p[c.projectKey].days[c.date] = (p[c.projectKey].days[c.date] || 0) + totalLapTime;
+        p[c.projectKey].totalTime += totalLapTime;
       }
 
-      const tempDaysTotals: any = {};
-      const projectsObject = laps.reduce((p, c) => {
-        const totalLapTime = c.endDateSinceEpoch - c.startDateSinceEpoch;
+      tempDaysTotals[c.date] = (tempDaysTotals[c.date] || 0) + totalLapTime;
 
-        if (!p[c.projectKey]) {
-          p[c.projectKey] = {
-            name: projects[c.projectKey].projectName || c.projectKey,
-            days: {
-              [c.date]: totalLapTime,
-            },
-            totalTime: totalLapTime,
-          }
-        } else {
-          p[c.projectKey].days[c.date] = (p[c.projectKey].days[c.date] || 0) + totalLapTime;
-          p[c.projectKey].totalTime += totalLapTime;
-        }
+      return p;
+    }, {} as { [ projectKey: string]: ISheetRow });
 
-        tempDaysTotals[c.date] = (tempDaysTotals[c.date] || 0) + totalLapTime;
+    setRows(Object.values(projectsObject));
+    setDaysTotal(tempDaysTotals);
 
-        return p;
-      }, {} as { [ projectKey: string]: ISheetRow });
-
-      setRows(Object.values(projectsObject));
-      setDaysTotal(tempDaysTotals);
-    });
-  };
+  }, [timeSheetData]);
 
   useEffect(() => {
     const todayEl = document.querySelector('.time-sheet-table th[is-today="true"]');
@@ -100,10 +94,13 @@ export function TimeSheetTable({
           <thead>
             <tr>
               <th>Project</th>
-              { days.map((d, i) => <th onClick={ () => selectDay(year, monthIndex, d.date) } key={ d.weekDayShort + "_" + i } aria-weekday={ d.weekDayIndex } is-today={ d.isToday.toString() }>
-                <span className="time-sheet-date">{ d.date }</span>
-                <span className="time-sheet-weekday">{ d.weekDayShort }</span>
-              </th>) }
+              {
+                days.map((d, i) =>
+                  <th onClick={ () => selectDay(year, monthIndex, d.date) } key={ d.weekDayShort + "_" + i } aria-weekday={ d.weekDayIndex } is-today={ d.isToday.toString()}>
+                  <span className="time-sheet-date">{ d.date }</span>
+                  <span className="time-sheet-weekday">{ d.weekDayShort }</span>
+                </th>)
+              }
               <th>Total</th>
             </tr>
           </thead>

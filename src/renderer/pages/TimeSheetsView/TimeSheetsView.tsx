@@ -6,13 +6,23 @@ import { IDaySelection, TimeSheetTable } from "../../components/TimeSheetTable/T
 
 import "./TimeSheetsView.css";
 import { DayEventsView } from "../../components/DayEventsView/DayEventsView";
+import { IProject } from "../../models/data/project";
+import { ITimeSheet } from "../../models/data/timeSheet";
 
 export function TimeSheetsView() {
-  const [ year, setYear ] = useState(new Date().getFullYear());
-  const [ month, setMonth ] = useState( monthIndexToMonthObj( new Date().getMonth(), year ) );
-  const [ selectedDay, setSelectedDay ] = useState<IDaySelection>();
-  const [ projects, setProjects ] = useState< { [key: string]: IProjectItem }>();
 
+  const [ month, setMonth ] = useState( monthIndexToMonthObj( new Date().getMonth(), new Date().getFullYear() ) );
+  const [ selectedDay, setSelectedDay ] = useState<IDaySelection>((() => {
+    const today = new Date();
+    return { year: today.getFullYear(), monthIndex: today.getMonth(), day: today.getDate() };
+   })());
+
+  /** List of all projects */
+  const [ projects, setProjects ] = useState< { [key: string]: IProjectItem }>({});
+  /** List the projects in the current month */
+  const [ projectsData, setProjectsData ] = useState< { [key: string]: IProject | null }>({});
+
+  const [ timeSheetData, setTimeSheetData ] = useState<ITimeSheet[]>([]);
 
   useEffect(() => {
     window.electron.projects.getProjects().then((projects) => {
@@ -23,11 +33,38 @@ export function TimeSheetsView() {
     });
   }, [])
 
+  useEffect(() => {
+    getTimeSheetData();
+  }, [ month ])
+
+
+  const getTimeSheetData = () => {
+    window.electron.timeSheet.getTimeSheetByMonth(month.index + 1, month.year).then((timeSheets) => {
+
+      setTimeSheetData(timeSheets);
+      setProjectsData( timeSheets.reduce((p, c) => {
+        if (p[c.projectKey] === undefined) {
+          p[c.projectKey] = null;
+          getProjectData(c.projectKey);
+        }
+
+        return p;
+      }, {} as { [key: string]: IProject | null }) )
+    });
+  }
+
+  const getProjectData = (projectKey: string) => {
+    window.electron.projects.getProject(projectKey).then((project) => {
+      projectsData[projectKey] = project;
+      setProjectsData(projectsData);
+    })
+  }
+
   return (
     <div className="laps-pageContainer">
       <div className="laps-filters-container">
         <div className="laps-year-selector">
-          <InfiniteSelector initialValue={ year } getPrevValue={year => year - 1} getNextValue={year => year + 1} onChange={ setYear } />
+          <InfiniteSelector initialValue={ month.year } getPrevValue={year => year - 1} getNextValue={year => year + 1} onChange={ (year) => setMonth({ index: month.index, name: month.name, year }) } />
         </div>
         <div className="laps-month-selector">
           <InfiniteSelector
@@ -63,14 +100,13 @@ export function TimeSheetsView() {
             }}
             onChange={(v) => {
               setMonth(v);
-              if (v.year !== year) setYear(v.year);
             }}
           />
         </div>
       </div>
       <div className="laps-view-container flex-column overflow-auto">
-        <TimeSheetTable monthIndex={ month.index } year={ month.year } projects={projects} onSelectedDay={(day) => setSelectedDay(day)} />
-        { selectedDay && <DayEventsView year={selectedDay.year} month={selectedDay.month} day={selectedDay.day} />}
+        <TimeSheetTable timeSheetData={ timeSheetData } projectsData={ projectsData } monthIndex={ month.index } year={ month.year } projects={projects} selectedDay={selectedDay} onSelectedDayChange={(day) => setSelectedDay(day)}  />
+        { selectedDay && <DayEventsView projectsData={ projectsData } timeSheetData={ timeSheetData }  year={selectedDay.year} month={selectedDay.monthIndex} day={selectedDay.day} />}
       </div>
 
     </div>

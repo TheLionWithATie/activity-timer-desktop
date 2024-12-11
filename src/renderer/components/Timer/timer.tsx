@@ -10,7 +10,6 @@ import NoteIcon from "src/icons/note.svg";
 
 import { IProjectItem } from "../../models/data/projectItem";
 import { IProject } from "../../models/data/project";
-import { ITimeSheet } from "../../models/data/timeSheet";
 import { ITask } from "../../models/data/task";
 import { TimerCircle } from "../TimerCircle";
 import { TextField } from "../fields/TextField";
@@ -25,14 +24,14 @@ import { electron } from "process";
 import { ProjectSettingsOverlay, ProjectSettingsOverlayAction } from "../ProjectOverlay/ProjectSettingsOverlay";
 import { TimerTasksList } from "./TimerTasksList";
 import { ProjectNotesOverlay, ProjectNotesOverlayAction } from "../ProjectOverlay/ProjectNotesOverlay";
-import { ActiveLap } from "../../../main/data/projectDb";
+import { IActiveLap } from "../../../main/data/projectDb";
 
 type ProjectOverlayAction = ProjectSettingsOverlayAction | ProjectNotesOverlayAction;
 
 function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
   projectItem: IProjectItem,
   projects: IProjectItem[],
-  initialActiveLap: ActiveLap | null,
+  initialActiveLap: IActiveLap | null,
   onInfoChanges: (value: IProjectItem) => void
 } ) {
   const [ project, setProject ] = useState<IProject>();
@@ -42,10 +41,10 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
 
   const [ totalTime, setTotalTime ] = useState<number>(0);
   const [ lastActiveTask, setLastActiveTask ] = useState<ITask | null>( null );
-  const [ activeLap, _setActiveLap ] = useState<ActiveLap | null>( initialActiveLap || null );
+  const [ activeLap, _setActiveLap ] = useState<IActiveLap | null>( initialActiveLap || null );
 
   const _activeTaskRef = useRef(activeLap);
-  const setActiveLap = (data: ActiveLap | null) => {
+  const setActiveLap = (data: IActiveLap | null) => {
     _activeTaskRef.current = data;
     _setActiveLap(data);
   };
@@ -148,8 +147,6 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
     }
   }
 
-  let showCircle = (project?.tasks.length === 1 && !createNewTask);
-
   return (
     <div id={ "timer-" + projectItem.fileName } className="timer-container" is-active={ (activeLap != null).toString() }>
       {
@@ -195,22 +192,12 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
         </button>
       </div>
 
-      <div className="timer-timer-container" hide-circle={ (!showCircle).toString() }>
-        {
-          showCircle ?
-            <div className="timer-timer-circle">
-              <TimerCircle
-                time={ totalTime }
-                target={ target }
-                primaryColor={ "var(--color-primary)" }
-                secondaryColor={ "white" }
-              />
-            </div> : null
-        }
-        <Clock totalTime={ totalTime } startTime={ activeLap ? activeLap.startDateSinceEpoch : 0 } isRunning={ !!activeLap } showSeconds={ showCircle ? true : "inline" } />
+      <div className="timer-timer-container" hide-circle="true">
+        <Clock totalTime={ totalTime } startTime={ activeLap ? activeLap.lapStart : 0 } isRunning={ !!activeLap } showSeconds={ "inline" } />
       </div>
       {
-        (!showCircle && project) ? <TimerTasksList
+        (project)
+        ? <TimerTasksList
           project={ project }
           activeLap={ activeLap }
           lastActiveTask={ lastActiveTask }

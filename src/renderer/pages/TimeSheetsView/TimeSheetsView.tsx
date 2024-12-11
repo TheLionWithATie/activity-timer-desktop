@@ -5,9 +5,8 @@ import { formatMiliseconds, MONTH_NAMES, monthIndexToMonthObj } from "../../../u
 import { IDaySelection, TimeSheetTable } from "../../components/TimeSheetTable/TimeSheetTable";
 
 import "./TimeSheetsView.css";
-import { DayEventsView } from "../../components/DayEventsView/DayEventsView";
 import { IProject } from "../../models/data/project";
-import { ITimeSheet } from "../../models/data/timeSheet";
+import { IDayTask } from "../../models/data/timeSheet";
 
 export function TimeSheetsView() {
 
@@ -22,7 +21,7 @@ export function TimeSheetsView() {
   /** List the projects in the current month */
   const [ projectsData, setProjectsData ] = useState< { [key: string]: IProject | null }>({});
 
-  const [ timeSheetData, setTimeSheetData ] = useState<ITimeSheet[]>([]);
+  const [ timeSheetData, setTimeSheetData ] = useState<IDayTask[]>([]);
 
   useEffect(() => {
     window.electron.projects.getProjects().then((projects) => {
@@ -106,7 +105,6 @@ export function TimeSheetsView() {
       </div>
       <div className="laps-view-container flex-column overflow-auto">
         <TimeSheetTable timeSheetData={ timeSheetData } projectsData={ projectsData } monthIndex={ month.index } year={ month.year } projects={projects} selectedDay={selectedDay} onSelectedDayChange={(day) => setSelectedDay(day)}  />
-        { selectedDay && <DayEventsView projectsData={ projectsData } timeSheetData={ timeSheetData }  year={selectedDay.year} month={selectedDay.monthIndex} day={selectedDay.day} />}
       </div>
 
     </div>

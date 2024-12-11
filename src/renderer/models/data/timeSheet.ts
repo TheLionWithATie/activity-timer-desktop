@@ -1,26 +1,30 @@
 import { formatMiliseconds } from "../../../util/time";
 
-export interface ITimeSheet {
 
+type Lap = [ number, number ];
+export interface IDayTask {
+
+  /**
+   * year-month-date-projectKey-taskKey
+   */
   key: string;
   projectKey: string;
   taskKey: string;
-
-  startDateSinceEpoch: number;
-  endDateSinceEpoch: number;
-
   date: number;
   weekDay: number;
+
+  totalTime: number;
+  notes: string;
 }
 
-export interface ITimeSheetExtended extends ITimeSheet {
+/* export interface ITimeSheetExtended extends ITimeSheet {
   startDate: Date,
   endDate: Date,
   totalTime: number;
   totalFormattedTime: string;
 }
-
-export function timeSheetToDateTable(timeSheet: ITimeSheet[]) {
+ */
+/* export function timeSheetToDateTable(timeSheet: ITimeSheet[]) {
   return timeSheet.reduce((p, c) => {
     const dateStart = new Date(c.startDateSinceEpoch);
     const dateEnd = new Date(c.endDateSinceEpoch);
@@ -43,3 +47,4 @@ export function timeSheetToDateTable(timeSheet: ITimeSheet[]) {
     return p;
   }, {} as { [key: string]: ITimeSheetExtended[] })
 }
+ */

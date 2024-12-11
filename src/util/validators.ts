@@ -18,6 +18,8 @@ export function taskNameValidator(tasks: ITask[] = [], value?: string) {
 
   if (!value) return "The task name cannot be empty";
 
+  if (value.length > 100) return "The task name is too long, use the note field to add more information";
+
   if (tasks.some(p => p.description === value)) return "The task already exists";
 
   return false;

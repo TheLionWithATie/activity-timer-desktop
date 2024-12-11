@@ -1,8 +1,8 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { ActiveLap, ProjectsListFilter } from './data/projectDb';
-import { ITimeSheet } from '../renderer/models/data/timeSheet';
+import { IActiveLap, ProjectsListFilter } from './data/projectDb';
+import { IDayTask } from '../renderer/models/data/timeSheet';
 import { IProjectItem } from '../renderer/models/data/projectItem';
 import { IProject } from '../renderer/models/data/project';
 import { ITask } from '../renderer/models/data/task';
@@ -12,10 +12,10 @@ export type Channels = 'ipc-example';
 export const PRELOAD_ACTIONS = {
   timeSheet: {
       getTimeSheetByMonth: async (month: number, year: number) => {
-        return ipcRenderer.invoke('time-sheet-get', month, year) as Promise<ITimeSheet[]>
+        return ipcRenderer.invoke('time-sheet-get', month, year) as Promise<IDayTask[]>
       },
-      editLap: async (month: number, year: number, lap: Partial<ITimeSheet>) => {
-        return ipcRenderer.invoke('time-sheet-edit-lap', month, year, lap) as Promise<ITimeSheet>
+      editLap: async (month: number, year: number, lap: Partial<IDayTask>) => {
+        return ipcRenderer.invoke('time-sheet-edit-lap', month, year, lap) as Promise<IDayTask>
       }
     },
   projects: {
@@ -27,7 +27,7 @@ export const PRELOAD_ACTIONS = {
       return ipcRenderer.invoke('project-get', key).catch(err => alert(err.message)) as Promise<IProject>;
     },
     "getActiveTask": async () => {
-      return ipcRenderer.invoke('active-task-get').catch(err => alert(err.message)) as Promise<ActiveLap>;
+      return ipcRenderer.invoke('active-task-get').catch(err => alert(err.message)) as Promise<IActiveLap>;
     },
     "createProject": async (projectName: string) => {
       return ipcRenderer.invoke('project-create', projectName).catch(err => alert(err.message)) as Promise<IProjectItem>;
@@ -45,7 +45,7 @@ export const PRELOAD_ACTIONS = {
       return ipcRenderer.invoke('project-edit-task', projectKey, taskKey, taskInfo).catch(err => alert(err.message)) as Promise<IProject>;
     },
     "startTaskLap": async (projectKey: string, taskKey: string, endTime: number) => {
-      return ipcRenderer.invoke('project-start-task-lap', projectKey, taskKey, endTime).catch(err => alert(err.message)) as Promise<ActiveLap>;
+      return ipcRenderer.invoke('project-start-task-lap', projectKey, taskKey, endTime).catch(err => alert(err.message)) as Promise<IActiveLap>;
     },
     "endTaskLap": async (endTime: number) => {
       return ipcRenderer.invoke('project-end-task-lap', endTime).catch(err => alert(err.message)) as Promise<IProject>;

@@ -4,7 +4,7 @@ import { IProject } from "../../models/data/project";
 import { TextField } from "../fields/TextField";
 import { TimerTask } from "../TimerTask/TimerTask";
 import { ITask } from "../../models/data/task";
-import { ActiveLap } from "../../../main/data/projectDb";
+import { IActiveLap } from "../../../main/data/projectDb";
 
 
 export function TimerTasksList({
@@ -16,7 +16,7 @@ export function TimerTasksList({
   createNewTask,
   createNewTaskChange,
 }: {
-  activeLap: ActiveLap | null,
+  activeLap: IActiveLap | null,
   lastActiveTask: ITask | null,
   project: IProject,
   projectChanged: (project: IProject) => void,

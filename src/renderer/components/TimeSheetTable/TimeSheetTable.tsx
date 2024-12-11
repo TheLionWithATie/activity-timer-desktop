@@ -4,8 +4,7 @@ import { formatMiliseconds, getMonthDays, transformMiliseconds } from "../../../
 
 import "./TimeSheetTable.css";
 import { div } from "framer-motion/client";
-import { ITimeSheet } from "../../models/data/timeSheet";
-import { DayEventsView } from "../DayEventsView/DayEventsView";
+import { IDayTask } from "../../models/data/timeSheet";
 import { IProject } from "../../models/data/project";
 
 interface ISheetRow { name: string, days: { [date: number]: number }, totalTime: number }
@@ -20,7 +19,7 @@ export function TimeSheetTable({
   selectedDay,
   onSelectedDayChange,
 }: {
-  timeSheetData: ITimeSheet[],
+  timeSheetData: IDayTask[],
   projectsData: { [key: string]: IProject | null },
   monthIndex: number,
   year: number,
@@ -53,22 +52,21 @@ export function TimeSheetTable({
 
     const tempDaysTotals: any = {};
     const projectsObject = timeSheetData.reduce((p, c) => {
-      const totalLapTime = c.endDateSinceEpoch - c.startDateSinceEpoch;
 
       if (!p[c.projectKey]) {
         p[c.projectKey] = {
           name: projects[c.projectKey].projectName || c.projectKey,
           days: {
-            [c.date]: totalLapTime,
+            [c.date]: c.totalTime,
           },
-          totalTime: totalLapTime,
+          totalTime: c.totalTime,
         }
       } else {
-        p[c.projectKey].days[c.date] = (p[c.projectKey].days[c.date] || 0) + totalLapTime;
-        p[c.projectKey].totalTime += totalLapTime;
+        p[c.projectKey].days[c.date] = (p[c.projectKey].days[c.date] || 0) + c.totalTime;
+        p[c.projectKey].totalTime += c.totalTime;
       }
 
-      tempDaysTotals[c.date] = (tempDaysTotals[c.date] || 0) + totalLapTime;
+      tempDaysTotals[c.date] = (tempDaysTotals[c.date] || 0) + c.totalTime;
 
       return p;
     }, {} as { [ projectKey: string]: ISheetRow });
@@ -96,7 +94,7 @@ export function TimeSheetTable({
               <th>Project</th>
               {
                 days.map((d, i) =>
-                  <th onClick={ () => selectDay(year, monthIndex, d.date) } key={ d.weekDayShort + "_" + i } aria-weekday={ d.weekDayIndex } is-today={ d.isToday.toString()}>
+                  <th onClick={ () => selectDay(year, monthIndex, d.date) } key={ d.weekDayShort + "_" + i } app-weekday={ d.weekDayIndex } is-today={ d.isToday.toString()}>
                   <span className="time-sheet-date">{ d.date }</span>
                   <span className="time-sheet-weekday">{ d.weekDayShort }</span>
                 </th>)
@@ -109,7 +107,7 @@ export function TimeSheetTable({
                 <tr key={ "time-sheet-row-" + r_i } className="time-sheet-row" style={{ animationDelay: (r_i + 1) * 0.25 + "s" }}>
                   <td key={ "name_col_" + r_i }>{r.name}</td>
                   {
-                    days.map(d => <td key={ "time_col_" + r_i + d.date } aria-weekday={ d.weekDayIndex } is-today={ d.isToday.toString() }>{ r.days[d.date] ? formatMiliseconds.toShortString(r.days[d.date], false) : "-" }</td>)
+                    days.map(d => <td key={ "time_col_" + r_i + d.date } app-weekday={ d.weekDayIndex } is-today={ d.isToday.toString() }>{ r.days[d.date] ? formatMiliseconds.toShortString(r.days[d.date], false) : "-" }</td>)
                   }
                   <td key={ "total_col_" + r_i }>{formatMiliseconds.toShortString(r.totalTime, false)}</td>
                 </tr>
@@ -117,7 +115,7 @@ export function TimeSheetTable({
               <tr className="time-sheet-row time-sheet-total-row">
                 <td></td>
                 {
-                  days.map(d => <td key={ "time_col_total" + d.date } aria-weekday={ d.weekDayIndex } is-today={ d.isToday.toString() }>{ daysTotals[d.date] ? formatMiliseconds.toShortString(daysTotals[d.date], false) : "0" }</td>)
+                  days.map(d => <td key={ "time_col_total" + d.date } app-weekday={ d.weekDayIndex } is-today={ d.isToday.toString() }>{ daysTotals[d.date] ? formatMiliseconds.toShortString(daysTotals[d.date], false) : "0" }</td>)
                 }
                 <td></td>
               </tr>

@@ -64,19 +64,19 @@
   border-radius: 0 0 15px 0;
 }
 
-.time-sheet-row td[aria-weekday="0"],
-.time-sheet-table th[aria-weekday="0"],
-.time-sheet-row td[aria-weekday="6"],
-.time-sheet-table th[aria-weekday="6"] {
+.time-sheet-row td[app-weekday="0"],
+.time-sheet-table th[app-weekday="0"],
+.time-sheet-row td[app-weekday="6"],
+.time-sheet-table th[app-weekday="6"] {
   background-color: var(--color-foreground-15);
   opacity: 0.5;
 }
-.time-sheet-row td[aria-weekday="0"]:not(:nth-child(1)),
-.time-sheet-table th[aria-weekday="0"]:not(:nth-child(1)) {
+.time-sheet-row td[app-weekday="0"]:not(:nth-child(1)),
+.time-sheet-table th[app-weekday="0"]:not(:nth-child(1)) {
   border-right: 1px solid var(--color-foreground-25);
 }
-.time-sheet-row td[aria-weekday="6"]:not(:nth-last-child(1)),
-.time-sheet-table th[aria-weekday="6"]:not(:nth-last-child(1)) {
+.time-sheet-row td[app-weekday="6"]:not(:nth-last-child(1)),
+.time-sheet-table th[app-weekday="6"]:not(:nth-last-child(1)) {
   border-left: 1px solid var(--color-foreground-25);
 }
 

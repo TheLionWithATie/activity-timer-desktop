@@ -44,7 +44,7 @@ export abstract class FileWriter {
         })
       });
   }
-  
+
   protected deleteFile(fileName: string) {
       return new Promise<boolean>((resolve, reject) => {
         this._fs.unlink(this._path.join(this._app.getPath('userData'), this.folderName, fileName), err => {
@@ -57,7 +57,7 @@ export abstract class FileWriter {
       });
   }
 
-  protected readData(fileName: string): Promise<any> {
+  protected readData<T>(fileName: string): Promise<T | null> {
       return new Promise(async (resolve, reject) => {
         if (! (await this.doesFileExist(fileName))) {
           resolve(null);

@@ -5,14 +5,19 @@ import { IpcMain, ipcRenderer } from "electron";
 import { storeService, timeSheetDbService } from "../main";
 import { IProjectItem } from "../../renderer/models/data/projectItem";
 import { IProject } from "../../renderer/models/data/project";
-import { ITimeSheet } from "../../renderer/models/data/timeSheet";
+import { IDayTask } from "../../renderer/models/data/timeSheet";
 import { start } from "repl";
 import { ITask } from "../../renderer/models/data/task";
 
 
 export type ProjectsListFilter = "all" | "completed" | "uncompleted";
 
-export type ActiveLap = Omit<Omit<ITimeSheet, "endDateSinceEpoch">, "key">;
+export interface IActiveLap {
+  projectKey: string,
+  taskKey: string,
+  lapStart: number,
+  notes?: string
+}
 
 export class ProjectDb extends FileWriter  {
 
@@ -63,7 +68,7 @@ export class ProjectDb extends FileWriter  {
     ipcMain.handle('project-end-task-lap', (event, endTime) => {
       return this.endTaskLap(endTime);
     });
-    
+
     ipcMain.handle('project-delete', (event, projectKey) => {
       return this.deleteProject(projectKey);
     });
@@ -72,7 +77,7 @@ export class ProjectDb extends FileWriter  {
   private async getProjects(filter?: ProjectsListFilter) {
     const projects = (await storeService).get("$projects") || [];
 
-    
+
     switch (filter) {
       case "completed":
         return projects.filter(p => p.completed);
@@ -82,8 +87,9 @@ export class ProjectDb extends FileWriter  {
         return projects;
     }
   }
+
   private async getActiveLap() {
-     return (await storeService).get("$activeLap") as Promise<ActiveLap>;
+     return (await storeService).get("$activeLap") as Promise<IActiveLap>;
   }
 
   private async getProject(key: string) {
@@ -130,7 +136,7 @@ export class ProjectDb extends FileWriter  {
   private async deleteProject(projectKey: string) {
     const cachedProjects = (await this.cachedProjects);
     const cachedProjectIndex = cachedProjects.findIndex(cp => cp.fileName === projectKey);
-    
+
     if (cachedProjectIndex === -1) throw Error("Project not found");
 
     const project = await this.readData(cachedProjects[cachedProjectIndex].fileName + ".json") as IProject;
@@ -141,7 +147,7 @@ export class ProjectDb extends FileWriter  {
     } else {
       cachedProjects[cachedProjectIndex].completed = true;
     }
-    
+
     storeService.then(store => store.set("$projects", cachedProjects));
 
     return true;
@@ -150,6 +156,9 @@ export class ProjectDb extends FileWriter  {
   private async editProjectInfo(projectKey: string, editedProject: Partial<Omit<IProject, "tasks">> ) {
     const cachedProjects = (await this.cachedProjects);
     const cachedProjectIndex = cachedProjects.findIndex(cp => cp.fileName === projectKey);
+
+    if (cachedProjectIndex === -1) throw Error("Project not found");
+
     const project = await this.readData(cachedProjects[cachedProjectIndex].fileName + ".json") as IProject;
 
     if (editedProject.name) project.name = cachedProjects[cachedProjectIndex].projectName = editedProject.name;
@@ -221,10 +230,10 @@ export class ProjectDb extends FileWriter  {
 
     if (!task) throw Error("No task found " + taskKey);
 
-    const newActiveLap = {
+    const newActiveLap: IActiveLap = {
       projectKey: cachedProject!.fileName,
       taskKey: task.key,
-      startDateSinceEpoch: startTime
+      lapStart: startTime
     };
 
     (await storeService).set("$activeLap", newActiveLap);
@@ -238,7 +247,7 @@ export class ProjectDb extends FileWriter  {
 
     if (!activeLap) throw Error("No active lap");
 
-    const startDate = new Date(activeLap.startDateSinceEpoch);
+    const startDate = new Date(activeLap.lapStart);
     const cachedProject = cachedProjects.find(cp => cp.fileName === activeLap.projectKey);
     if (!cachedProject) {
       (await storeService).set("$activeLap", null);
@@ -252,13 +261,13 @@ export class ProjectDb extends FileWriter  {
     }
     const taskIndex = project.tasks.findIndex(t => t.key === activeLap.taskKey);
 
-    project.tasks[taskIndex].totalTime += endTime - activeLap.startDateSinceEpoch;
+    project.tasks[taskIndex].totalTime += endTime - activeLap.lapStart;
 
     await this.saveData(project.key + ".json", project);
 
-    await timeSheetDbService.__addLap(startDate.getMonth() + 1, startDate.getFullYear(), {
+    await timeSheetDbService.__addLap(project.key, project.tasks[taskIndex].key, {
       ...activeLap,
-      endDateSinceEpoch: endTime
+      lapEnd: endTime
     });
 
     (await storeService).set("$activeLap", null);

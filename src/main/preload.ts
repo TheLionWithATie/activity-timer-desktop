@@ -32,8 +32,11 @@ export const PRELOAD_ACTIONS = {
     "createProject": async (projectName: string) => {
       return ipcRenderer.invoke('project-create', projectName).catch(err => alert(err.message)) as Promise<IProjectItem>;
     },
-    "editProjectInfo": async (projectKey: string, editedProject: Partial<Omit<IProject, "tasks">> ) => {
+    "editProjectInfo": async (projectKey: string, editedProject: Partial<Omit<IProject, "tasks" | "color" | "textColor" | "hilightColor">> ) => {
       return ipcRenderer.invoke('project-edit-info', projectKey, editedProject).catch(err => alert(err.message)) as Promise<IProject>;
+    },
+    "editProjectColor": async (projectKey: string, color: string ) => {
+      return ipcRenderer.invoke('project-edit-color', projectKey, color).catch(err => alert(err.message)) as Promise<IProject>;
     },
     "deleteProject": async (projectKey: string) => {
       return ipcRenderer.invoke('project-delete', projectKey).catch(err => alert(err.message)) as Promise<IProject>;

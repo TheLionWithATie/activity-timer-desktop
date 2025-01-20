@@ -13,6 +13,7 @@ export function TimerTasksList({
   project,
   projectChanged,
   startTaskTimer,
+  stopTaskTimer,
   createNewTask,
   createNewTaskChange,
 }: {
@@ -21,6 +22,7 @@ export function TimerTasksList({
   project: IProject,
   projectChanged: (project: IProject) => void,
   startTaskTimer: (task: ITask) => void,
+  stopTaskTimer: (task: ITask) => void,
   createNewTask: boolean
   createNewTaskChange: (value: boolean) => void
 }) {
@@ -52,6 +54,9 @@ export function TimerTasksList({
       tasks={ project.tasks }
       onPlayClick={() => {
         startTaskTimer(t)
+      }}
+      onPauseClick={() => {
+        stopTaskTimer(t)
       }}
       updatedTask={(project: IProject) => {
         projectChanged(project);

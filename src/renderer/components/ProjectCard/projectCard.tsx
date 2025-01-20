@@ -2,11 +2,7 @@
 import CSS from "csstype";
 import { useState, useRef, useEffect, useCallback } from "react";
 
-import AddIcon from "src/icons/add.svg";
-import PauseIcon from "src/icons/pause.svg";
-import PlayIcon from "src/icons/play.svg";
-import SettingsIcon from "src/icons/settings.svg";
-import NoteIcon from "src/icons/note.svg";
+import DotsIcon from "src/icons/dots.svg";
 
 import { IProjectItem } from "../../models/data/projectItem";
 import { IProject } from "../../models/data/project";
@@ -15,7 +11,7 @@ import { TimerCircle } from "../TimerCircle";
 import { TextField } from "../fields/TextField";
 import { formatMiliseconds } from "../../../util/time";
 
-import "./timer.css";
+import "./projectCard.css";
 import { projectNameValidator, taskNameValidator } from "../../../util/validators";
 import { TimerTask } from "../TimerTask/TimerTask";
 import { appBehaviourSubject } from "../../pages/TimersDashboard/TimersDashboard";
@@ -28,7 +24,7 @@ import { IActiveLap } from "../../../main/data/projectDb";
 
 type ProjectOverlayAction = ProjectSettingsOverlayAction | ProjectNotesOverlayAction;
 
-function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
+function ProjectCard({ projectItem, projects, onInfoChanges, initialActiveLap }: {
   projectItem: IProjectItem,
   projects: IProjectItem[],
   initialActiveLap: IActiveLap | null,
@@ -159,13 +155,12 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
         { `
           #timer-${ projectItem.fileName } {
             --color-primary: ${ project?.color || "#000" };
+            --color-highlight: ${ project?.hilightColor || "#000" };
+            --color-text: ${ project?.textColor || "#000" };
           }
         ` }
       </style>
       <div className="timer-header" is-editing-name={ isEditingName.toString() }>
-        <button className="btn-icon btn-no-background" type="button" onClick={ () => setOverlay("notes") }>
-          <img src={ NoteIcon } />
-        </button>
         <TextField
           setFocus={ isEditingName }
           value={ project?.name || projectItem.projectName }
@@ -188,13 +183,32 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
             return projectNameValidator(projects, value);
           }} />
         <button type="button" className="btn-icon btn-no-background" onClick={ () => setOverlay("settings") }>
-          <img src={ SettingsIcon } />
+          <img src={ DotsIcon } />
         </button>
       </div>
 
       <div className="timer-timer-container" hide-circle="true">
-        <Clock totalTime={ totalTime } startTime={ activeLap ? activeLap.lapStart : 0 } isRunning={ !!activeLap } showSeconds={ "inline" } />
+        <Clock
+          totalTime={ totalTime }
+          startTime={ activeLap ? activeLap.lapStart : 0 }
+          isRunning={ !!activeLap }
+          showSeconds={ "inline" }
+          target={ target }
+          changeTarget={ (target) => {
+            window.electron.projects.editProjectInfo(project!.key, {
+              ...project!,
+              target,
+            }).then((project) => {
+              setProject({ ...project });
+            });
+          }}
+        />
       </div>
+      <button type="button" className="btn btn-add-task" disabled={ createNewTask } onClick={() => {
+          setCreateNewTask(true);
+        }}>
+          <span>{ createNewTask ? "Cancel" : "Add a task"}</span>
+      </button>
       {
         (project)
         ? <TimerTasksList
@@ -203,32 +217,13 @@ function Timer({ projectItem, projects, onInfoChanges, initialActiveLap }: {
           lastActiveTask={ lastActiveTask }
           projectChanged={ setProject }
           startTaskTimer={ startTaskTimer }
+          stopTaskTimer={ stopActiveTaskTimer }
           createNewTask={ createNewTask }
           createNewTaskChange={ setCreateNewTask }
         /> : null
       }
-
-      <div className="timer-actions-row" style={ { flex: 0, flexBasis: "10%" } }>
-        <button className="btn btn-no-background flex-grow">
-          { target > 0 ?
-              <span className="timer-infoText"> { formatMiliseconds.toShortString(target, false) } </span>
-            :
-              <img src={ AddIcon }/>
-          }
-          <span>TARGET</span>
-        </button>
-        <button className="btn-icon button" onClick={ () => activeLap ? stopActiveTaskTimer() : startTaskTimer(lastActiveTask || project!.tasks![0] ) }>
-          <img src={ activeLap ? PlayIcon : PauseIcon }/>
-        </button>
-        <button className="btn btn-no-background flex-grow" onClick={() => {
-          setCreateNewTask(true);
-        }}>
-          <img src={ AddIcon }/>
-          <span>TASK</span>
-        </button>
-      </div>
     </div>
   );
 }
 
-export default Timer;
+export default ProjectCard;

@@ -25,3 +25,13 @@ export function taskNameValidator(tasks: ITask[] = [], value?: string) {
   return false;
 
 }
+
+export function targetValidator(value?: string) {
+
+  if (!value) return "The target cannot be empty";
+
+  if (!value.trim().match(/([0-9]+[hm] ?)+$/g)) return "The target must follow the format: 0h 0m";
+
+  return false;
+
+}

@@ -8,6 +8,7 @@ import { IProject } from "../../renderer/models/data/project";
 import { IDayTask } from "../../renderer/models/data/timeSheet";
 import { start } from "repl";
 import { ITask } from "../../renderer/models/data/task";
+import { hexToRGB, RGBToHSL } from "../util";
 
 
 export type ProjectsListFilter = "all" | "completed" | "uncompleted";
@@ -52,6 +53,9 @@ export class ProjectDb extends FileWriter  {
 
     ipcMain.handle('project-edit-info', (event, projectKey, editedProject) => {
       return this.editProjectInfo(projectKey, editedProject);
+    });
+    ipcMain.handle('project-edit-color', (event, projectKey, color) => {
+      return this.editProjectColor(projectKey, color);
     });
 
     ipcMain.handle('project-add-task', (event, projectKey, taskName) => {
@@ -113,7 +117,10 @@ export class ProjectDb extends FileWriter  {
       key: fileName,
       name: String(projectName),
       description: "",
+      creationDate: new Date().toISOString(),
       color: "#1B31FF",
+      ...this.getProjectThemeFromColor("#1B31FF"),
+
       tasks: [
         {
           key: (new Date().getTime()).toString(16),
@@ -153,7 +160,7 @@ export class ProjectDb extends FileWriter  {
     return true;
   }
 
-  private async editProjectInfo(projectKey: string, editedProject: Partial<Omit<IProject, "tasks">> ) {
+  private async editProjectInfo(projectKey: string, editedProject: Partial<Omit<IProject, "tasks" | "color" | "textColor" | "hilightColor">> ) {
     const cachedProjects = (await this.cachedProjects);
     const cachedProjectIndex = cachedProjects.findIndex(cp => cp.fileName === projectKey);
 
@@ -165,7 +172,27 @@ export class ProjectDb extends FileWriter  {
     if (editedProject.completed) project.completed = cachedProjects[cachedProjectIndex].completed = editedProject.completed;
     if (editedProject.description) project.description = editedProject.description;
     if (editedProject.target) project.target = editedProject.target;
-    if (editedProject.color) project.color = editedProject.color;
+
+    // update project file
+    await this.saveData(project.key + ".json", project);
+
+    // update the project list in cache
+    (await storeService).set("$projects", cachedProjects);
+
+    return project;
+  }
+  private async editProjectColor(projectKey: string, color: string ) {
+    const cachedProjects = (await this.cachedProjects);
+    const cachedProjectIndex = cachedProjects.findIndex(cp => cp.fileName === projectKey);
+
+    if (cachedProjectIndex === -1) throw Error("Project not found");
+
+    const project = await this.readData(cachedProjects[cachedProjectIndex].fileName + ".json") as IProject;
+
+    const theme = this.getProjectThemeFromColor(color);
+    project.color = color;
+    project.textColor = theme.textColor;
+    project.hilightColor = theme.hilightColor;
 
     // update project file
     await this.saveData(project.key + ".json", project);
@@ -275,5 +302,20 @@ export class ProjectDb extends FileWriter  {
 
 
     return project;
+  }
+
+  private getProjectThemeFromColor(color: string) {
+
+    const rgbColor = hexToRGB(color);
+    const textColorHLS = RGBToHSL(rgbColor.r, rgbColor.g, rgbColor.b);
+    const hilightColorHLS = { ...textColorHLS };
+
+    textColorHLS.l = Math.max( textColorHLS.l, 75);
+    hilightColorHLS.s = Math.min( textColorHLS.s, 50);
+
+    return {
+      textColor: `hsl(${textColorHLS.h}deg ${textColorHLS.s}% ${textColorHLS.l}%)`,
+      hilightColor: `hsl(${hilightColorHLS.h}deg ${hilightColorHLS.s}% ${hilightColorHLS.l}% / 10%)`,
+    };
   }
 }

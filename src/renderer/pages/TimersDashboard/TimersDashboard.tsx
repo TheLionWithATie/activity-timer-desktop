@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Timer from "../../components/Timer/timer";
 import { IProjectItem } from "../../models/data/projectItem";
 
 import "./TimersDashboard.css";
@@ -11,6 +10,7 @@ import { ITask } from "../../models/data/task";
 import { IActiveLap } from "../../../main/data/projectDb";
 import { div } from "framer-motion/client";
 import { EmptyProjectCard } from "../../components/EmptyProjectCard";
+import ProjectCard from "../../components/ProjectCard/projectCard";
 
 export const appBehaviourSubject = document.createElement("behaviour-subject");
 
@@ -43,7 +43,7 @@ export function TimersDashboard() {
       {
         initialActiveTask !== undefined ? <div className="dashboard-grid">
           {
-            projects.map((p, i) => <Timer
+            projects.map((p, i) => <ProjectCard
               key={ p.fileName }
               projectItem={ p }
               projects={ projects }

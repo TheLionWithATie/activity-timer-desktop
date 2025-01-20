@@ -72,10 +72,7 @@ export function ProjectSettingsOverlay({
   }, [ project ]);
 
   const setProjectColor = () => {
-    window.electron.projects.editProjectInfo(project.key, {
-      ...project,
-      color: color
-    }).then((project) => {
+    window.electron.projects.editProjectColor(project.key, color).then((project) => {
       onAction("changed-project", project);
       setSlide({ index: 0, direction: -1 })
     })

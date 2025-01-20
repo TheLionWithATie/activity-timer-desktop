@@ -1,5 +1,6 @@
 
 
+import { formatMiliseconds, transformMiliseconds } from "../../../util/time";
 import { taskNameValidator } from "../../../util/validators";
 import { IProject } from "../../models/data/project";
 import { ITask } from "../../models/data/task";
@@ -7,6 +8,7 @@ import { TextField } from "../fields/TextField";
 import "./TimerTask.css";
 
 import PlayIcon from "src/icons/play.svg";
+import PauseIcon from "src/icons/pause.svg";
 
 export function TimerTask({
   projectKey,
@@ -15,6 +17,7 @@ export function TimerTask({
   isLastPlayedTask,
   tasks,
   onPlayClick,
+  onPauseClick,
   updatedTask,
 }: {
   projectKey: string,
@@ -23,16 +26,13 @@ export function TimerTask({
   isLastPlayedTask: boolean,
   tasks: ITask[],
   onPlayClick?: () => void
+  onPauseClick?: () => void
   updatedTask: (project: IProject) => void
 }) {
-
-
   return (
     <div className="flex-row timer-task" is-active={ isActiveTask.toString() } aria-selected={ (isActiveTask || isLastPlayedTask) } aria-disabled={ task.completed }>
-      <div className="timer-task-indicator flex-row">
-        <div onClick={ onPlayClick }>
-          <img src={ PlayIcon } />
-        </div>
+      <div className="timer-task-indicator btn flex-row" onClick={ isActiveTask ? onPauseClick : onPlayClick }>
+        <img src={ isActiveTask ? PauseIcon : PlayIcon } />
       </div>
       <span className="flex-grow timer-task-description">
         <TextField
@@ -48,6 +48,9 @@ export function TimerTask({
             return taskNameValidator(tasks, value);
           }}
         />
+      </span>
+      <span className="timer-task-time">
+          { formatMiliseconds.toLongString(task.totalTime, false, false) }
       </span>
     </div>
   )

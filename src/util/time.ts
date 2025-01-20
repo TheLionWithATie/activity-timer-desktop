@@ -14,6 +14,35 @@ export const transformMiliseconds = {
     }
   },
 };
+export const getMiliseconds = {
+  /**
+   * Returns miliseconds from a string in the format of "1h 30m 59s".
+   * @param time - string in the format of "1h 30m 59s"
+   * @returns miliseconds
+   */
+  fromTimeString: (time: string) => {
+    let seconds = 0;
+    time.trim().split(/ +/g).forEach((part) => {
+      const lastP = part.slice(-1);
+      const numP = Number(part.slice(0, -1));
+      if (isNaN(numP)) return;
+
+      switch (lastP) {
+        case "h":
+          seconds += numP * 60 * 60;
+          break;
+        case "m":
+          seconds += numP * 60;
+          break;
+        case "s":
+          seconds += numP;
+          break;
+      }
+    });
+
+    return seconds * 1000;
+  }
+}
 export const formatMiliseconds = {
   toLongString: (miliseconds: number, showSeconds = false, showDays = false) => {
     const timeObj = transformMiliseconds.toTimeObject(miliseconds);

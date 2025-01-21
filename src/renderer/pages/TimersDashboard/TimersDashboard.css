@@ -17,6 +17,10 @@
   gap: 20px;
   padding: 20px;
 }
+.selected-child {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
 .dashboard-grid > .dashboard-add-project-btn {
   background-color: var(--color-foreground-25);
   align-items: center;

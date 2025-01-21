@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Children, useEffect, useState } from "react";
 import { IProjectItem } from "../../models/data/projectItem";
 
 import "./TimersDashboard.css";
@@ -11,6 +11,7 @@ import { IActiveLap } from "../../../main/data/projectDb";
 import { div } from "framer-motion/client";
 import { EmptyProjectCard } from "../../components/EmptyProjectCard";
 import ProjectCard from "../../components/ProjectCard/projectCard";
+import { SortableGrid } from "../../components/SortableGrid";
 
 export const appBehaviourSubject = document.createElement("behaviour-subject");
 
@@ -38,38 +39,75 @@ export function TimersDashboard() {
     })
   }, []);
 
-  return (
-    <div className="timers-dashboard">
-      {
-        initialActiveTask !== undefined ? <div className="dashboard-grid">
-          {
-            projects.map((p, i) => <ProjectCard
-              key={ p.fileName }
-              projectItem={ p }
-              projects={ projects }
-              initialActiveLap={ initialActiveTask }
-              onInfoChanges={ (value) => {
-                projects[i] = value;
-                setProjects([...projects]);
-              }}
-            />)
+  /* return (<div className="timers-dashboard">
+    {
+      initialActiveTask !== undefined ? <div className="dashboard-grid">
+        {
+          projects.map((p, i) => 
+            <div>
+              <div
+                onDragStart={ (e) => {} }
+                onDrag={ (e) => {} }>
+                <ProjectCard
+                  key={ p.fileName }
+                  projectItem={ p }
+                  projects={ projects }
+                  initialActiveLap={ initialActiveTask }
+                  onInfoChanges={ (value) => {
+                    projects[i] = value;
+                    setProjects([...projects]);
+                  }}/>
+              </div>
+            </div>
+          )
+        }
+        {
+          emptyProjects.map((_, i) => (
+            <EmptyProjectCard key={ "empty_project_" + i } projects={ projects } createProject={ (value: string) => {
+              window.electron.projects.createProject(value).then((p) => {
+                setProjects([...projects, p]);
+                setEmptyProjects((projects.length) < 2 ? Array(2 - projects.length).fill(null) : [null]);
+              });
+            }} />
+          ))
+        }
+      </div> : <motion.div className="loading-spinner" animate={{
+        scale: [1, 2, 2, 1, 1],
+        rotate: [0, 0, 270, 270, 0],
+        borderRadius: ["20%", "20%", "50%", "50%", "20%"],
+      }}></motion.div>
+    }
+  </div>) */
+  return (<div className="timers-dashboard">
+    {
+      initialActiveTask !== undefined ? 
+        <SortableGrid
+          children={
+            projects.map((p, i) => 
+              <div>
+                <div
+                  onDragStart={ (e) => {} }
+                  onDrag={ (e) => {} }>
+                  <ProjectCard
+                    key={ p.fileName }
+                    projectItem={ p }
+                    projects={ projects }
+                    initialActiveLap={ initialActiveTask }
+                    onInfoChanges={ (value) => {
+                      projects[i] = value;
+                      setProjects([...projects]);
+                    }}/>
+                </div>
+              </div>
+            )
           }
-          {
-            emptyProjects.map((_, i) => (
-              <EmptyProjectCard key={ "empty_project_" + i } projects={ projects } createProject={ (value: string) => {
-                window.electron.projects.createProject(value).then((p) => {
-                  setProjects([...projects, p]);
-                  setEmptyProjects((projects.length) < 2 ? Array(2 - projects.length).fill(null) : [null]);
-                });
-              }} />
-            ))
-          }
-        </div> : <motion.div className="loading-spinner" animate={{
-          scale: [1, 2, 2, 1, 1],
-          rotate: [0, 0, 270, 270, 0],
-          borderRadius: ["20%", "20%", "50%", "50%", "20%"],
-        }}></motion.div>
+          listChanged={ () => {} }
+          ></SortableGrid> 
+          : <motion.div className="loading-spinner" animate={{
+              scale: [1, 2, 2, 1, 1],
+              rotate: [0, 0, 270, 270, 0],
+              borderRadius: ["20%", "20%", "50%", "50%", "20%"],
+            }}></motion.div>
       }
-    </div>
-  );
+    </div>);
 }

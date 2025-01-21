@@ -17,7 +17,7 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { rejects } from 'assert';
 import { IProjectItem } from '../renderer/models/data/projectItem';
-import { ITimeSheet } from '../renderer/models/data/timeSheet';
+import { IDayTask } from '../renderer/models/data/timeSheet';
 import { TimeSheetDb } from './data/timeSheetDb';
 import { ProjectDb } from './data/projectDb';
 
@@ -34,7 +34,7 @@ export const storeService = import('electron-store').then((electronStrore) => {
   const Store = electronStrore.default;
   const store = new Store<{
     "$projects": IProjectItem[],
-    "$activeLaps": ITimeSheet[],
+    "$activeLaps": IDayTask[],
   }>({
     schema: {
       "$projects": {

@@ -1,7 +1,16 @@
+.timers-dashboard {
+  overflow: hidden;
+  width: 100%;
+  flex: 1 1 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
 .dashboard-grid {
   display: flex;
+  height: 100%;
   scrollbar-gutter: stable;
-  overflow-y: overlay;
+  overflow-y: auto;
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;

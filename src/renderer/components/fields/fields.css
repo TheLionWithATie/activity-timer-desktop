@@ -6,6 +6,10 @@
   align-items: stretch;
   position: relative;
   font-size: 20px;
+  cursor: text;
+}
+.field-value:hover {
+  text-decoration: underline;
 }
 
 .field-input {

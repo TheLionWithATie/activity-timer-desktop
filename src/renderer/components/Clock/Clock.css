@@ -1,3 +1,6 @@
+.clock {
+  width: 100%;
+}
 
 .clock-text {
   color: var(--color-foreground);
@@ -26,6 +29,7 @@
   font-size: 120px;
   margin: 0;
   pointer-events: none;
+  user-select: none;
 }
 
 .clock[show-seconds="inline"] {
@@ -34,5 +38,17 @@
 
 .clock .field-value {
   text-align: center;
+  width: 100%;
   color: var(--color-text);
+}
+.clock input {
+  text-align: center;
+  font-size: 0.8em;
+}
+
+.clock .field-error {
+  position: absolute;
+  top: 100%;
+  background: var(--color-card);
+  padding: 5px 5px 2px;
 }

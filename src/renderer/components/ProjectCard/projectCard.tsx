@@ -76,6 +76,7 @@ function ProjectCard({ projectItem, projects, onInfoChanges, initialActiveLap }:
 
     window.electron.projects.getProject(projectItem.fileName).then((p) => {
       setProject(p);
+      setTarget(p.target);
       setTotalTime(p.tasks.reduce((acc, task) => acc + task.totalTime, 0) );
       setTarget(p.target);
 
@@ -196,10 +197,10 @@ function ProjectCard({ projectItem, projects, onInfoChanges, initialActiveLap }:
           target={ target }
           changeTarget={ (target) => {
             window.electron.projects.editProjectInfo(project!.key, {
-              ...project!,
               target,
             }).then((project) => {
               setProject({ ...project });
+              setTarget(project.target);
             });
           }}
         />

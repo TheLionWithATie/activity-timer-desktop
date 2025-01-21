@@ -31,7 +31,6 @@ export function Clock({
   changeTarget: (target: number) => void
 }) {
   const getCalculatedTime = () => (startTime ? Date.now() - startTime : 0) + (totalTime || 0);
-  const [ _target, setTarget ] = useState(formatMiliseconds.toLongString(target) );
   const [ isEditingTarget, setIsEditingTarget ] = useState(false);
   const [ formattedTime, setFormattedTime ] = useState<{
     formattedTime: string,
@@ -67,12 +66,11 @@ export function Clock({
           <button className="target-button" onClick={ () => setIsEditingTarget(true) }>SET TARGET</button>
         : <TextField
             setFocus={ isEditingTarget }
-            value={ _target }
+            value={ formatMiliseconds.toLongString(target) }
             onCancel={() => setIsEditingTarget(false)}
             onChange={(value: string) => {
               const m = getMiliseconds.fromTimeString(value)
               changeTarget(m);
-              setTarget( formatMiliseconds.toLongString(m) );
             }}
             validator={ targetValidator } />
       }

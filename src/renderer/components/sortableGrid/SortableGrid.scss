@@ -1,0 +1,18 @@
+.sortable-grid {
+  margin: 20px;
+
+  > div {
+    transition: all 0.2s ease-out;
+
+    &.selected-child {
+      user-select: none;
+      cursor: grabbing;
+      transform: scale(0.5);
+
+      > * {
+        pointer-events: none;
+      }
+    }
+  }
+}
+

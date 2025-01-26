@@ -11,7 +11,7 @@ import { IActiveLap } from "../../../main/data/projectDb";
 import { div } from "framer-motion/client";
 import { EmptyProjectCard } from "../../components/EmptyProjectCard";
 import ProjectCard from "../../components/ProjectCard/projectCard";
-import { SortableGrid } from "../../components/SortableGrid";
+import { SortableGrid } from "../../components/sortableGrid/SortableGrid";
 
 export const appBehaviourSubject = document.createElement("behaviour-subject");
 
@@ -43,7 +43,7 @@ export function TimersDashboard() {
     {
       initialActiveTask !== undefined ? <div className="dashboard-grid">
         {
-          projects.map((p, i) => 
+          projects.map((p, i) =>
             <div>
               <div
                 onDragStart={ (e) => {} }
@@ -80,10 +80,10 @@ export function TimersDashboard() {
   </div>) */
   return (<div className="timers-dashboard">
     {
-      initialActiveTask !== undefined ? 
+      initialActiveTask !== undefined ?
         <SortableGrid
           children={
-            projects.map((p, i) => 
+            projects.map((p, i) =>
               <div>
                 <div
                   onDragStart={ (e) => {} }
@@ -102,7 +102,7 @@ export function TimersDashboard() {
             )
           }
           listChanged={ () => {} }
-          ></SortableGrid> 
+          ></SortableGrid>
           : <motion.div className="loading-spinner" animate={{
               scale: [1, 2, 2, 1, 1],
               rotate: [0, 0, 270, 270, 0],
